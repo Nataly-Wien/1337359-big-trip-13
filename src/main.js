@@ -3,7 +3,8 @@ import {createTripMenuTemplate} from './view/trip-menu.js';
 import {createTripFiltersTemplate} from './view/trip-filters.js';
 import {createTripSortTemplate} from './view/trip-sort.js';
 import {createTripContainerTemplate} from './view/trip-container.js';
-import {createTripPointTemplate} from './view/trip-punct';
+import {createTripPointTemplate} from './view/trip-point';
+import {createTripPointOpenTemplate} from './view/trip-point-open';
 
 const POINT_COUNT = 5;
 
@@ -22,6 +23,8 @@ render(siteMain, createTripSortTemplate, `beforeend`);
 render(siteMain, createTripContainerTemplate, `beforeend`);
 
 const tripContainer = siteMain.querySelector(`.trip-events__list`);
+
+render(tripContainer, createTripPointOpenTemplate, `afterbegin`);
 
 for (let i = 0; i < POINT_COUNT; i++) {
   render(tripContainer, createTripPointTemplate, `beforeend`);
