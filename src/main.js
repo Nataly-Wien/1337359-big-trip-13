@@ -1,12 +1,13 @@
-import {createTripInfoTemplate} from './view/trip-info.js';
-import {createTripMenuTemplate} from './view/trip-menu.js';
-import {createTripFiltersTemplate} from './view/trip-filters.js';
-import {createTripSortTemplate} from './view/trip-sort.js';
-import {createTripContainerTemplate} from './view/trip-container.js';
+import {createTripInfoTemplate} from './view/trip-info';
+import {createTripMenuTemplate} from './view/trip-menu';
+import {createTripFiltersTemplate} from './view/trip-filters';
+import {createTripSortTemplate} from './view/trip-sort';
+import {createTripContainerTemplate} from './view/trip-container';
 import {createTripPointTemplate} from './view/trip-point';
-import {createTripPointOpenTemplate} from './view/trip-point-open';
+import {createTripAddTemplate} from './view/trip-add';
+import {createTripEditTemplate} from './view/trip-edit';
 
-const POINT_COUNT = 5;
+const POINT_COUNT = 3;
 
 const siteHeader = document.querySelector(`.trip-main`);
 const siteControls = siteHeader.querySelector(`.trip-controls`);
@@ -17,15 +18,17 @@ const render = (container, template, place) => {
 };
 
 render(siteHeader, createTripInfoTemplate(), `afterbegin`);
-render(siteControls, createTripMenuTemplate, `afterbegin`);
-render(siteControls, createTripFiltersTemplate, `beforeend`);
-render(siteMain, createTripSortTemplate, `beforeend`);
-render(siteMain, createTripContainerTemplate, `beforeend`);
+render(siteControls, createTripMenuTemplate(), `afterbegin`);
+render(siteControls, createTripFiltersTemplate(), `beforeend`);
+render(siteMain, createTripSortTemplate(), `beforeend`);
+render(siteMain, createTripContainerTemplate(), `beforeend`);
 
 const tripContainer = siteMain.querySelector(`.trip-events__list`);
 
-render(tripContainer, createTripPointOpenTemplate, `afterbegin`);
+render(tripContainer, createTripAddTemplate(), `afterbegin`);
 
 for (let i = 0; i < POINT_COUNT; i++) {
-  render(tripContainer, createTripPointTemplate, `beforeend`);
+  render(tripContainer, createTripPointTemplate(), `beforeend`);
 }
+
+render(tripContainer, createTripEditTemplate(), `beforeend`);
