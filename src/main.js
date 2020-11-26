@@ -11,7 +11,7 @@ import {createTripEventTemplate} from './view/trip-event';
 import {createTripAddTemplate} from './view/trip-add';
 import {createTripEditTemplate} from './view/trip-edit';
 
-const EVENT_COUNT = 3;
+const EVENT_COUNT = 15;
 
 const siteHeader = document.querySelector(`.trip-main`);
 const siteControls = siteHeader.querySelector(`.trip-controls`);
@@ -32,9 +32,9 @@ render(siteMain, createTripContainerTemplate(), `beforeend`);
 
 const tripContainer = siteMain.querySelector(`.trip-events__list`);
 
-render(tripContainer, createTripAddTemplate(), `afterbegin`);
+render(tripContainer, createTripAddTemplate(sortedEvents[0]), `afterbegin`);
 
-for (let i = 0; i < EVENT_COUNT; i++) {
+for (let i = 1; i < EVENT_COUNT; i++) {
   render(tripContainer, createTripEventTemplate(sortedEvents[i]), `beforeend`);
 }
 
