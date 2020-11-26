@@ -1,4 +1,7 @@
 import {generateEvent} from './mock/mocks';
+import {getTotalPrice} from './utils';
+import {getTripDates} from './utils';
+import {getRoute} from './utils';
 import {createTripInfoTemplate} from './view/trip-info';
 import {createTripMenuTemplate} from './view/trip-menu';
 import {createTripFiltersTemplate} from './view/trip-filters';
@@ -8,8 +11,7 @@ import {createTripEventTemplate} from './view/trip-event';
 import {createTripAddTemplate} from './view/trip-add';
 import {createTripEditTemplate} from './view/trip-edit';
 
-const POINT_COUNT = 3;
-const EVENT_COUNT = 20;
+const EVENT_COUNT = 3;
 
 const siteHeader = document.querySelector(`.trip-main`);
 const siteControls = siteHeader.querySelector(`.trip-controls`);
@@ -19,9 +21,10 @@ const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
 };
 
-const events = new Array(EVENT_COUNT).fill().map(generateEvent());
+const events = new Array(EVENT_COUNT).fill().map(generateEvent);
+const sortedEvents = events.slice(0).sort((a, b) => a.startDateTime - b.startDateTime);
 
-render(siteHeader, createTripInfoTemplate(), `afterbegin`);
+render(siteHeader, createTripInfoTemplate(getTotalPrice(sortedEvents), getTripDates(sortedEvents), getRoute(sortedEvents)), `afterbegin`);
 render(siteControls, createTripMenuTemplate(), `afterbegin`);
 render(siteControls, createTripFiltersTemplate(), `beforeend`);
 render(siteMain, createTripSortTemplate(), `beforeend`);
@@ -31,8 +34,8 @@ const tripContainer = siteMain.querySelector(`.trip-events__list`);
 
 render(tripContainer, createTripAddTemplate(), `afterbegin`);
 
-for (let i = 0; i < POINT_COUNT; i++) {
-  render(tripContainer, createTripEventTemplate(), `beforeend`);
+for (let i = 0; i < EVENT_COUNT; i++) {
+  render(tripContainer, createTripEventTemplate(sortedEvents[i]), `beforeend`);
 }
 
-render(tripContainer, createTripEditTemplate(), `beforeend`);
+render(tripContainer, createTripEditTemplate(sortedEvents[EVENT_COUNT - 1]), `beforeend`);

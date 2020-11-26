@@ -1,29 +1,47 @@
-export const createTripEventTemplate = () => {
+import dayjs from "dayjs";
+
+export const createTripEventTemplate = (event) => {
+  const {
+    type,
+    city,
+    price,
+    offers,
+    startDateTime,
+    endDateTime,
+  } = event;
+
+  const differenceHour = dayjs(endDateTime).diff(dayjs(startDateTime), `hour`);
+  const hour = differenceHour === 0 ? `` : `${differenceHour}H`;
+  const differenceMinute = dayjs(endDateTime).diff(dayjs(startDateTime), `minute`) % 60;
+  const minute = differenceMinute === 0 ? `` : `${differenceMinute}M`;
+
+  const offersTemplate = offers.reduce((string, item) =>
+    item.isChecked ? string +
+      `<li class="event__offer">
+     <span class="event__offer-title">${item.title} </span>&plus;&euro;&nbsp; <span class="event__offer-price">${item.price}</span>
+    </li>` : string, ``);
+
   return `<li class="trip-events__item">
               <div class="event">
-                <time class="event__date" datetime="2019-03-18">MAR 18</time>
+                <time class="event__date" datetime="2019-03-18">${dayjs(startDateTime).format(`MMM DD`)}</time>
                 <div class="event__type">
-                  <img class="event__type-icon" width="42" height="42" src="img/icons/taxi.png" alt="Event type icon">
+                  <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
                 </div>
-                <h3 class="event__title">Taxi Amsterdam</h3>
+                <h3 class="event__title">${type} ${city}</h3>
                 <div class="event__schedule">
                   <p class="event__time">
-                    <time class="event__start-time" datetime="2019-03-18T10:30">10:30</time>
+                    <time class="event__start-time" datetime="2019-03-18T10:30">${dayjs(startDateTime).format(`HH:mm`)}</time>
                     &mdash;
-                    <time class="event__end-time" datetime="2019-03-18T11:00">11:00</time>
+                    <time class="event__end-time" datetime="2019-03-18T11:00">${dayjs(endDateTime).format(`HH:mm`)}</time>
                   </p>
-                  <p class="event__duration">30M</p>
+                  <p class="event__duration">${hour} ${minute}</p>
                 </div>
                 <p class="event__price">
-                  &euro;&nbsp;<span class="event__price-value">20</span>
+                  &euro;&nbsp;<span class="event__price-value">${price}</span>
                 </p>
                 <h4 class="visually-hidden">Offers:</h4>
                 <ul class="event__selected-offers">
-                  <li class="event__offer">
-                    <span class="event__offer-title">Order Uber</span>
-                    &plus;&euro;&nbsp;
-                    <span class="event__offer-price">20</span>
-                  </li>
+                  ${offersTemplate}
                 </ul>
                 <button class="event__favorite-btn event__favorite-btn--active" type="button">
                   <span class="visually-hidden">Add to favorite</span>
