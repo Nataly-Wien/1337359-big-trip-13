@@ -15,11 +15,9 @@ export const createTripEventTemplate = (event) => {
   const differenceMinute = dayjs(endDateTime).diff(dayjs(startDateTime), `minute`) % 60;
   const minute = differenceMinute === 0 ? `` : `${differenceMinute}M`;
 
-  const offersTemplate = offers.reduce((string, item) =>
-    item.isChecked ? string +
-      `<li class="event__offer">
+  const offersTemplate = offers.map((item) => item.isChecked ? `<li class="event__offer">
      <span class="event__offer-title">${item.title} </span>&plus;&euro;&nbsp; <span class="event__offer-price">${item.price}</span>
-    </li>` : string, ``);
+    </li>` : ``).join(``);
 
   return `<li class="trip-events__item">
               <div class="event">

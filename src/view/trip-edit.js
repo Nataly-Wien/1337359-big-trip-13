@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
-import {createEventTypeTemplate} from '../utils';
-import {createOffersTemplate} from '../utils';
+import {createEventTypeChoiceTemplate} from './event-type-choice';
+import {createOffersChoiceTemplate} from './offers-choice';
 
 export const createTripEditTemplate = (event) => {
   const {
@@ -25,7 +25,7 @@ export const createTripEditTemplate = (event) => {
                     <div class="event__type-list">
                       <fieldset class="event__type-group">
                         <legend class="visually-hidden">Event type</legend>
-                        ${createEventTypeTemplate(type)}
+                        ${createEventTypeChoiceTemplate(type)}
                       </fieldset>
                     </div>
                   </div>
@@ -68,7 +68,7 @@ export const createTripEditTemplate = (event) => {
                   <section class="event__section  event__section--offers">
                     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
                     <div class="event__available-offers">
-                    ${createOffersTemplate(offers)}
+                    ${createOffersChoiceTemplate(offers)}
                     </div>
                   </section>
 

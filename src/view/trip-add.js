@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import {emptyEvent} from '../utils';
-import {createEventTypeTemplate} from '../utils';
-import {createOffersTemplate} from '../utils';
+import {createEventTypeChoiceTemplate} from './event-type-choice';
+import {createOffersChoiceTemplate} from './offers-choice';
 
 export const createTripAddTemplate = (event = emptyEvent) => {
   const {
@@ -15,8 +15,8 @@ export const createTripAddTemplate = (event = emptyEvent) => {
     endDateTime,
   } = event;
 
-  const createPhotosTemplate = () => descriptionPhotos.reduce((string, item) => string +
-    `<img class="event__photo" src="${item.descriptionPhotos}" alt="Event photo">`, ``);
+  const createPhotosTemplate = () => descriptionPhotos.map((item) =>
+    `<img class="event__photo" src="${item.descriptionPhotos}" alt="Event photo">`).join(``);
 
 
   return `<form class="event event--edit" action="#" method="post">
@@ -31,7 +31,7 @@ export const createTripAddTemplate = (event = emptyEvent) => {
                     <div class="event__type-list">
                       <fieldset class="event__type-group">
                         <legend class="visually-hidden">Event type</legend>
-                        ${createEventTypeTemplate(type)}
+                        ${createEventTypeChoiceTemplate(type)}
                       </fieldset>
                     </div>
                   </div>
@@ -71,7 +71,7 @@ export const createTripAddTemplate = (event = emptyEvent) => {
                   <section class="event__section  event__section--offers">
                     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
                     <div class="event__available-offers">
-                     ${createOffersTemplate(offers)}
+                     ${createOffersChoiceTemplate(offers)}
                     </div>
                   </section>
 
