@@ -1,6 +1,22 @@
 import dayjs from 'dayjs';
-import {createEventTypeChoiceTemplate} from './event-type-choice';
-import {createOffersChoiceTemplate} from './offers-choice';
+import {EVENT_TYPES} from '../const';
+
+const createEventTypeChoiceTemplate = (type) => EVENT_TYPES.map((item) =>
+  `<div class="event__type-item">
+    <input id="event-type-${item.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type"
+      value="${item.toLowerCase()}" ${item === type ? `checked` : ``}>
+    <label class="event__type-label  event__type-label--${item.toLowerCase()}" for="event-type-${item.toLowerCase()}-1">${item}</label>
+  </div>`).join();
+
+const createOffersChoiceTemplate = (offers) => offers.map((item) =>
+  `<div class="event__offer-selector">
+    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${item.type.toLowerCase()}-1" type="checkbox" name="event-offer-${item.type.toLowerCase()}" ${item.isChecked ? `checked` : ``}>
+    <label class="event__offer-label" for="event-offer-${item.type.toLowerCase()}-1">
+      <span class="event__offer-title">Add ${item.type.toLowerCase()}</span>
+      &plus;&euro;&nbsp;
+      <span class="event__offer-price">${item.price}</span>
+    </label>
+  </div>`).join(``);
 
 export const createTripEditTemplate = (event) => {
   const {
