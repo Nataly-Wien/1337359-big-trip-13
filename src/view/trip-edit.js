@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
 import {EVENT_TYPES} from '../const';
+import {createElement} from '../utils';
+
 
 const createEventTypeChoiceTemplate = (type) => EVENT_TYPES.map((item) =>
   `<div class="event__type-item">
@@ -18,7 +20,7 @@ const createOffersChoiceTemplate = (offers) => offers.map((item) =>
     </label>
   </div>`).join(``);
 
-export const createTripEditTemplate = (event) => {
+const createTripEditTemplate = (event) => {
   const {
     type,
     city,
@@ -95,3 +97,26 @@ export const createTripEditTemplate = (event) => {
                 </section>
               </form>`;
 };
+
+export default class TripEdit {
+  constructor(event) {
+    this._event = event;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripEditTemplate(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

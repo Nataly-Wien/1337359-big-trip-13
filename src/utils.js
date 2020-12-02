@@ -1,6 +1,11 @@
 import dayjs from 'dayjs';
 import {OFFERS} from './const';
 
+export const RenderPosition = {
+  AFTERBEGIN: `afterbegin`,
+  BEFOREEND: `beforeend`,
+};
+
 const getEmptyOffers = () => Object.entries(OFFERS).map((item) => ({
   type: item[0],
   title: item[1],
@@ -39,4 +44,26 @@ export const getRoute = (events) => {
   const shortRoute = Array.from(new Set(route));
 
   return shortRoute.map((item) => ` &mdash; ${item}`).join(``).slice(8);
+};
+
+export const renderElement = (container, element, position) => {
+  switch (position) {
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+  }
+};
+
+export const renderTemplate = (container, template, position) => {
+  container.insertAdjacentHTML(position, template);
+};
+
+export const createElement = (template) => {
+  const element = document.createElement(`div`);
+  element.innerHTML = template;
+
+  return element.firstChild;
 };
