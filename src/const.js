@@ -32,3 +32,8 @@ export const SORT_FIELDS = [
   `Price`,
   `Offers`,
 ];
+
+export const MESSAGES = [
+  `Click New Event to create your first point`,
+  `Loading...`,
+];

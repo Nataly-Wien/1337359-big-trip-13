@@ -2,6 +2,10 @@ import dayjs from 'dayjs';
 import {createElement} from '../utils';
 
 const createTripInfoTemplate = (price, dates, trip) => {
+  if (!trip) {
+    return ``;
+  }
+
   return `<section class="trip-main__trip-info  trip-info">
             <div class="trip-info__main">
               <h1 class="trip-info__title">${trip}</h1>

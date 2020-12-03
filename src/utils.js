@@ -24,10 +24,14 @@ export const emptyEvent = {
   endDateTime: dayjs().unix() * 1000,
 };
 
-export const getTotalPrice = (events) => events.reduce((total, item) => total + item.price +
-  item.offers.reduce((sum, it) => sum + it.isChecked ? it.price : 0, 0), 0);
+export const getTotalPrice = (events) => events && events.length > 0 ? events.reduce((total, item) => total + item.price +
+  item.offers.reduce((sum, it) => sum + it.isChecked ? it.price : 0, 0), 0) : ``;
 
 export const getTripDates = (events) => {
+  if (!events || events.length === 0) {
+    return ``;
+  }
+
   return {
     startDate: events[0].startDateTime,
     endDate: events[events.length - 1].endDateTime,
@@ -35,6 +39,10 @@ export const getTripDates = (events) => {
 };
 
 export const getRoute = (events) => {
+  if (!events || events.length === 0) {
+    return ``;
+  }
+
   const route = events.map((item) => item.city);
 
   if (route.length > 3) {
@@ -47,6 +55,10 @@ export const getRoute = (events) => {
 };
 
 export const renderElement = (container, element, position) => {
+  if (!element) {
+    return;
+  }
+
   switch (position) {
     case RenderPosition.AFTERBEGIN:
       container.prepend(element);

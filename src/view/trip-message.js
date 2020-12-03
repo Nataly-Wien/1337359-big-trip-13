@@ -4,13 +4,14 @@ const createTripMessageTemplate = (message) => {
   return `<p class="trip-events__msg">${message}</p>`;
 };
 
-export class TripMessage {
-  constructor() {
+export default class TripMessage {
+  constructor(message) {
+    this._message = message;
     this._element = null;
   }
 
   getTemplate() {
-    return createTripMessageTemplate();
+    return createTripMessageTemplate(this._message);
   }
 
   getElement() {
