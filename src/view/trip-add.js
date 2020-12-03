@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
-import {emptyEvent} from '../utils';
 import {EVENT_TYPES} from '../const';
+import {emptyEvent, createElement} from '../utils';
 
 const createEventTypeChoiceTemplate = (type) => EVENT_TYPES.map((item) =>
   `<div class="event__type-item">
@@ -19,7 +19,7 @@ const createOffersChoiceTemplate = (offers) => offers.map((item) =>
     </label>
   </div>`).join(``);
 
-export const createTripAddTemplate = (event = emptyEvent) => {
+const createTripAddTemplate = (event = emptyEvent) => {
   const {
     type,
     city,
@@ -104,3 +104,26 @@ export const createTripAddTemplate = (event = emptyEvent) => {
                 </section>
               </form>`;
 };
+
+export default class TripAdd {
+  constructor(event) {
+    this._event = event;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripAddTemplate(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

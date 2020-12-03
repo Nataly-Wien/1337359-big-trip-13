@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
+import {createElement} from '../utils';
 
-export const createTripEventTemplate = (event) => {
+const createTripEventTemplate = (event) => {
   const {
     type,
     city,
@@ -53,3 +54,26 @@ export const createTripEventTemplate = (event) => {
               </div>
             </li>`;
 };
+
+export default class TripEvent {
+  constructor(event) {
+    this._event = event;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripEventTemplate(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
