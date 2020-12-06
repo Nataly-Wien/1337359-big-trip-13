@@ -1,5 +1,5 @@
 import {FILTERS} from '../const';
-import {createElement} from '../utils';
+import AbstractTrip from './abstract';
 
 const currentFilter = `Everything`;
 
@@ -16,24 +16,8 @@ const createTripFiltersTemplate = () => {
             </form>`;
 };
 
-export default class TripFilters {
-  constructor() {
-    this._element = null;
-  }
-
+export default class TripFilters extends AbstractTrip {
   getTemplate() {
     return createTripFiltersTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

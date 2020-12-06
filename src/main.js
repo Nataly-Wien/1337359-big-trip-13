@@ -1,6 +1,6 @@
 import {generateEvent} from './mock/mocks';
 import {MESSAGES} from './const';
-import {renderElement, RenderPosition, getTotalPrice, getTripDates, getRoute} from './utils';
+import {renderElement, RenderPosition} from './utils';
 import TripInfoView from './view/trip-info';
 import TripMenuView from './view/trip-menu';
 import TripFiltersView from './view/trip-filters';
@@ -18,6 +18,7 @@ const siteMain = document.querySelector(`.trip-events`);
 
 const events = new Array(EVENT_COUNT).fill().map(generateEvent);
 const sortedEvents = events.slice(0).sort((a, b) => a.startDateTime - b.startDateTime);
+// const sortedEvents = [];
 
 const showEvent = (container, event) => {
   const tripEvent = new TripEventView(event).getElement();
@@ -53,13 +54,14 @@ const showEvent = (container, event) => {
   renderElement(container, tripEvent, RenderPosition.BEFOREEND);
 };
 
-renderElement(siteHeader, new TripInfoView(getTotalPrice(sortedEvents), getTripDates(sortedEvents), getRoute(sortedEvents)).getElement(), RenderPosition.AFTERBEGIN);
-renderElement(siteControls, new TripMenuView().getElement(), RenderPosition.AFTERBEGIN);
-renderElement(siteControls, new TripFiltersView().getElement(), RenderPosition.BEFOREEND);
-
 if (!sortedEvents || sortedEvents.length === 0) {
+  renderElement(siteControls, new TripMenuView().getElement(), RenderPosition.AFTERBEGIN);
+  renderElement(siteControls, new TripFiltersView().getElement(), RenderPosition.BEFOREEND);
   renderElement(siteMain, new TripMessageView(MESSAGES[0]).getElement(), RenderPosition.BEFOREEND);
 } else {
+  renderElement(siteHeader, new TripInfoView(sortedEvents).getElement(), RenderPosition.AFTERBEGIN);
+  renderElement(siteControls, new TripMenuView().getElement(), RenderPosition.AFTERBEGIN);
+  renderElement(siteControls, new TripFiltersView().getElement(), RenderPosition.BEFOREEND);
   renderElement(siteMain, new TripSortView().getElement(), RenderPosition.BEFOREEND);
   renderElement(siteMain, new TripContainerView().getElement(), RenderPosition.BEFOREEND);
 

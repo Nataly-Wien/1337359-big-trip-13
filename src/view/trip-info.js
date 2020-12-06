@@ -1,11 +1,7 @@
 import dayjs from 'dayjs';
-import {createElement} from '../utils';
+import {createElement, getTotalPrice, getTripDates, getRoute} from '../utils';
 
 const createTripInfoTemplate = (price, dates, trip) => {
-  if (!trip) {
-    return ``;
-  }
-
   return `<section class="trip-main__trip-info  trip-info">
             <div class="trip-info__main">
               <h1 class="trip-info__title">${trip}</h1>
@@ -18,10 +14,10 @@ const createTripInfoTemplate = (price, dates, trip) => {
 };
 
 export default class TripInfo {
-  constructor(price, dates, route) {
-    this._price = price;
-    this._dates = dates;
-    this._route = route;
+  constructor(events) {
+    this._price = getTotalPrice(events);
+    this._dates = getTripDates(events);
+    this._route = getRoute(events);
     this._element = null;
   }
 

@@ -1,28 +1,16 @@
-import {createElement} from '../utils';
+import AbstractTrip from './abstract';
 
 const createTripMessageTemplate = (message) => {
   return `<p class="trip-events__msg">${message}</p>`;
 };
 
-export default class TripMessage {
+export default class TripMessage extends AbstractTrip {
   constructor(message) {
+    super();
     this._message = message;
-    this._element = null;
   }
 
   getTemplate() {
     return createTripMessageTemplate(this._message);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate(this._element));
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

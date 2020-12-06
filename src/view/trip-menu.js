@@ -1,4 +1,4 @@
-import {createElement} from '../utils';
+import AbstractTrip from './abstract';
 
 const createTripMenuTemplate = () => {
   return `<nav class="trip-controls__trip-tabs  trip-tabs">
@@ -7,24 +7,8 @@ const createTripMenuTemplate = () => {
             </nav>`;
 };
 
-export default class TripMenu {
-  constructor() {
-    this._element = null;
-  }
-
+export default class TripMenu extends AbstractTrip {
   getTemplate() {
     return createTripMenuTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

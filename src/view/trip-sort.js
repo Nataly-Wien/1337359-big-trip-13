@@ -1,5 +1,5 @@
 import {SORT_FIELDS} from '../const';
-import {createElement} from '../utils';
+import AbstractTrip from './abstract';
 
 const currentSortField = `Day`;
 
@@ -15,24 +15,8 @@ const createTripSortTemplate = () => {
           </form>`;
 };
 
-export default class TripSort {
-  constructor() {
-    this._element = null;
-  }
-
+export default class TripSort extends AbstractTrip {
   getTemplate() {
     return createTripSortTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

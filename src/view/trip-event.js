@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import {createElement} from '../utils';
+import AbstractTrip from './abstract';
 
 const createTripEventTemplate = (event) => {
   const {
@@ -55,25 +55,13 @@ const createTripEventTemplate = (event) => {
             </li>`;
 };
 
-export default class TripEvent {
+export default class TripEvent extends AbstractTrip {
   constructor(event) {
+    super();
     this._event = event;
-    this._element = null;
   }
 
   getTemplate() {
     return createTripEventTemplate(this._event);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
