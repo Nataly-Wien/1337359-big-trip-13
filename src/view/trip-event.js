@@ -59,9 +59,20 @@ export default class TripEvent extends AbstractTrip {
   constructor(event) {
     super();
     this._event = event;
+    this._editBtnClickHandler = this._editBtnClickHandler.bind(this);
   }
 
   getTemplate() {
     return createTripEventTemplate(this._event);
+  }
+
+  _editBtnClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.editBtnClick();
+  }
+
+  setEditBtnClickHandler(callback) {
+    this._callback.editBtnClick = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editBtnClickHandler);
   }
 }

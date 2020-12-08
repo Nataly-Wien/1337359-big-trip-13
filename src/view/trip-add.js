@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import {EVENT_TYPES} from '../const';
-import {emptyEvent} from '../utils';
+import {emptyEvent} from '../utils/event';
 import AbstractTrip from './abstract';
 
 const createEventTypeChoiceTemplate = (type) => EVENT_TYPES.map((item) =>

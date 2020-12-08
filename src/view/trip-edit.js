@@ -102,9 +102,31 @@ export default class TripEdit extends AbstractTrip {
   constructor(event) {
     super();
     this._event = event;
+    this._saveBtnClickHandler = this._saveBtnClickHandler.bind(this);
+    this._cancelBtnClickHandler = this._cancelBtnClickHandler.bind(this);
+  }
+
+  _saveBtnClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.saveBtnClick();
+  }
+
+  _cancelBtnClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.cancelBtnClick();
   }
 
   getTemplate() {
     return createTripEditTemplate(this._event);
+  }
+
+  setSaveBtnClickHandler(callback) {
+    this._callback.saveBtnClick = callback;
+    this.getElement().querySelector(`.event__save-btn`).addEventListener(`click`, this._saveBtnClickHandler);
+  }
+
+  setCancelBtnClickHandler(callback) {
+    this._callback.cancelBtnClick = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._cancelBtnClickHandler);
   }
 }

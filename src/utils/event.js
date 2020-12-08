@@ -1,10 +1,5 @@
 import dayjs from 'dayjs';
-import {OFFERS} from './const';
-
-export const RenderPosition = {
-  AFTERBEGIN: `afterbegin`,
-  BEFOREEND: `beforeend`,
-};
+import {OFFERS} from '../const';
 
 const getEmptyOffers = () => Object.entries(OFFERS).map((item) => ({
   type: item[0],
@@ -12,6 +7,7 @@ const getEmptyOffers = () => Object.entries(OFFERS).map((item) => ({
   price: ``,
   isChecked: ``,
 }));
+
 
 export const emptyEvent = {
   type: `Taxi`,
@@ -24,8 +20,10 @@ export const emptyEvent = {
   endDateTime: dayjs().unix() * 1000,
 };
 
+
 export const getTotalPrice = (events) => events && events.length > 0 ? events.reduce((total, item) => total + item.price +
   item.offers.reduce((sum, it) => sum + it.isChecked ? it.price : 0, 0), 0) : ``;
+
 
 export const getTripDates = (events) => {
   if (!events || events.length === 0) {
@@ -37,6 +35,7 @@ export const getTripDates = (events) => {
     endDate: events[events.length - 1].endDateTime,
   };
 };
+
 
 export const getRoute = (events) => {
   if (!events || events.length === 0) {
@@ -52,30 +51,4 @@ export const getRoute = (events) => {
   const shortRoute = Array.from(new Set(route));
 
   return shortRoute.map((item) => ` &mdash; ${item}`).join(``).slice(8);
-};
-
-export const renderElement = (container, element, position) => {
-  if (!element) {
-    return;
-  }
-
-  switch (position) {
-    case RenderPosition.AFTERBEGIN:
-      container.prepend(element);
-      break;
-    case RenderPosition.BEFOREEND:
-      container.append(element);
-      break;
-  }
-};
-
-export const renderTemplate = (container, template, position) => {
-  container.insertAdjacentHTML(position, template);
-};
-
-export const createElement = (template) => {
-  const element = document.createElement(`div`);
-  element.innerHTML = template;
-
-  return element.firstChild;
 };

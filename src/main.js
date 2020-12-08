@@ -1,6 +1,6 @@
 import {generateEvent} from './mock/mocks';
 import {MESSAGES} from './const';
-import {renderElement, RenderPosition} from './utils';
+import {renderElement, RenderPosition, replaceElement} from './utils/render';
 import TripInfoView from './view/trip-info';
 import TripMenuView from './view/trip-menu';
 import TripFiltersView from './view/trip-filters';
@@ -18,40 +18,39 @@ const siteMain = document.querySelector(`.trip-events`);
 
 const events = new Array(EVENT_COUNT).fill().map(generateEvent);
 const sortedEvents = events.slice(0).sort((a, b) => a.startDateTime - b.startDateTime);
-// const sortedEvents = [];
 
 const showEvent = (container, event) => {
-  const tripEvent = new TripEventView(event).getElement();
-  const editEvent = new TripEditView(event).getElement();
+  const tripEvent = new TripEventView(event);
+  const editEvent = new TripEditView(event);
 
   const onDocumentKeydown = (evt) => {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
-      container.replaceChild(tripEvent, editEvent);
+      replaceElement(tripEvent, editEvent);
       document.removeEventListener(`keydown`, onDocumentKeydown);
     }
   };
 
   const onEditButtonClick = () => {
-    container.replaceChild(editEvent, tripEvent);
+    replaceElement(editEvent, tripEvent);
     document.addEventListener(`keydown`, onDocumentKeydown);
   };
 
   const onSaveButtonClick = () => {
-    container.replaceChild(tripEvent, editEvent);
+    replaceElement(tripEvent, editEvent);
     document.removeEventListener(`keydown`, onDocumentKeydown);
   };
 
-  const onRollupButtonClick = () => {
-    container.replaceChild(tripEvent, editEvent);
+  const onCancelButtonClick = () => {
+    replaceElement(tripEvent, editEvent);
     document.removeEventListener(`keydown`, onDocumentKeydown);
   };
 
-  tripEvent.querySelector(`.event__rollup-btn`).addEventListener(`click`, onEditButtonClick);
-  editEvent.querySelector(`.event__save-btn`).addEventListener(`click`, onSaveButtonClick);
-  editEvent.querySelector(`.event__rollup-btn`).addEventListener(`click`, onRollupButtonClick);
+  tripEvent.setEditBtnClickHandler(onEditButtonClick);
+  editEvent.setSaveBtnClickHandler(onSaveButtonClick);
+  editEvent.setCancelBtnClickHandler(onCancelButtonClick);
 
-  renderElement(container, tripEvent, RenderPosition.BEFOREEND);
+  renderElement(container, tripEvent.getElement(), RenderPosition.BEFOREEND);
 };
 
 if (!sortedEvents || sortedEvents.length === 0) {

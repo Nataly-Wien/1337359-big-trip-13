@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
-import {createElement, getTotalPrice, getTripDates, getRoute} from '../utils';
+import {getTotalPrice, getTripDates, getRoute} from '../utils/event';
+import {createElement} from '../utils/render';
 
 const createTripInfoTemplate = (price, dates, trip) => {
   return `<section class="trip-main__trip-info  trip-info">
