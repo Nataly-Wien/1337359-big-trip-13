@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import {createElement} from '../utils';
+import AbstractTrip from './abstract';
 
 const createTripEventTemplate = (event) => {
   const {
@@ -55,25 +55,24 @@ const createTripEventTemplate = (event) => {
             </li>`;
 };
 
-export default class TripEvent {
+export default class TripEvent extends AbstractTrip {
   constructor(event) {
+    super();
     this._event = event;
-    this._element = null;
+    this._editBtnClickHandler = this._editBtnClickHandler.bind(this);
   }
 
   getTemplate() {
     return createTripEventTemplate(this._event);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _editBtnClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.editBtnClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setEditBtnClickHandler(callback) {
+    this._callback.editBtnClick = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editBtnClickHandler);
   }
 }

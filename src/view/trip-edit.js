@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import {EVENT_TYPES} from '../const';
-import {createElement} from '../utils';
+import AbstractTrip from './abstract';
 
 
 const createEventTypeChoiceTemplate = (type) => EVENT_TYPES.map((item) =>
@@ -98,25 +98,35 @@ const createTripEditTemplate = (event) => {
               </form>`;
 };
 
-export default class TripEdit {
+export default class TripEdit extends AbstractTrip {
   constructor(event) {
+    super();
     this._event = event;
-    this._element = null;
+    this._saveBtnClickHandler = this._saveBtnClickHandler.bind(this);
+    this._cancelBtnClickHandler = this._cancelBtnClickHandler.bind(this);
+  }
+
+  _saveBtnClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.saveBtnClick();
+  }
+
+  _cancelBtnClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.cancelBtnClick();
   }
 
   getTemplate() {
     return createTripEditTemplate(this._event);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  setSaveBtnClickHandler(callback) {
+    this._callback.saveBtnClick = callback;
+    this.getElement().querySelector(`.event__save-btn`).addEventListener(`click`, this._saveBtnClickHandler);
   }
 
-  removeElement() {
-    this._element = null;
+  setCancelBtnClickHandler(callback) {
+    this._callback.cancelBtnClick = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._cancelBtnClickHandler);
   }
 }
