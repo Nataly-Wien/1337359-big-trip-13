@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
-import {getTotalPrice, getTripDates, getRoute} from '../utils/event';
+import AbstractTrip from './abstract';
+import {getTotalPrice, getTripDates, getRoute} from '../utils/events';
 import {createElement} from '../utils/render';
 
 const createTripInfoTemplate = (price, dates, trip) => {
@@ -14,8 +15,9 @@ const createTripInfoTemplate = (price, dates, trip) => {
           </section>`;
 };
 
-export default class TripInfo {
+export default class TripInfo extends AbstractTrip {
   constructor(events) {
+    super();
     this._price = getTotalPrice(events);
     this._dates = getTripDates(events);
     this._route = getRoute(events);
