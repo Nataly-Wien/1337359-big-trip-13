@@ -1,5 +1,6 @@
 import {MESSAGES, SORTS} from '../const';
-import {renderElement, RenderPosition} from '../utils/render';
+import {renderElement, RenderPosition, remove} from '../utils/render';
+import {updateData} from '../utils/common';
 import TripInfoView from '../view/trip-info';
 import TripMenuView from '../view/trip-menu';
 import TripFiltersView from '../view/trip-filters';
@@ -20,6 +21,9 @@ export default class Trip {
     this._tripContainerComponent = new TripContainerView();
     this._messageComponent = null;
     this._eventsContainer = null;
+    this._eventsPresenter = new Map();
+
+    this._handleEventChange = this._handleEventChange.bind(this);
   }
 
   init(tripEvents) {
@@ -59,8 +63,6 @@ export default class Trip {
   }
 
   _renderTripContainer() {
-
-
     renderElement(this._eventsControlsContainer, this._tripContainerComponent, RenderPosition.BEFOREEND);
     this._eventsContainer = this._eventsControlsContainer.querySelector(`.trip-events__list`);
   }
@@ -69,9 +71,22 @@ export default class Trip {
     events.forEach((event) => this._renderEvent(event));
   }
 
+  _clearEvents() {
+    this._eventsPresenter.values().forEach((presenter) => presenter.destroy());
+    this._eventsPresenter.clear();
+
+    remove(this._menuComponent);
+  }
+
   _renderEvent(event) {
-    const eventPresenter = new EventPresenter(this._tripContainerComponent);
+    const eventPresenter = new EventPresenter(this._tripContainerComponent, this._handleEventChange);
     eventPresenter.init(event);
+    this._eventsPresenter.set(event.id, eventPresenter);
+  }
+
+  _handleEventChange(updatedEvent) {
+    this._events = updateData(this._events, updatedEvent);
+    this._eventsPresenter.get(updatedEvent.id).update(updatedEvent);
   }
 
   _renderMessage() {

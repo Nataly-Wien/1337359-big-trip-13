@@ -9,6 +9,7 @@ const createTripEventTemplate = (event) => {
     offers,
     startDateTime,
     endDateTime,
+    isFavorite,
   } = event;
 
   const differenceHour = dayjs(endDateTime).diff(dayjs(startDateTime), `hour`);
@@ -19,6 +20,8 @@ const createTripEventTemplate = (event) => {
   const offersTemplate = offers.map((item) => item.isChecked ? `<li class="event__offer">
      <span class="event__offer-title">${item.title} </span>&plus;&euro;&nbsp; <span class="event__offer-price">${item.price}</span>
     </li>` : ``).join(``);
+
+  const favoriteButtonTemplate = isFavorite ? ` event__favorite-btn--active` : ``;
 
   return `<li class="trip-events__item">
               <div class="event">
@@ -42,7 +45,7 @@ const createTripEventTemplate = (event) => {
                 <ul class="event__selected-offers">
                   ${offersTemplate}
                 </ul>
-                <button class="event__favorite-btn event__favorite-btn--active" type="button">
+                <button class="event__favorite-btn${favoriteButtonTemplate}" type="button">
                   <span class="visually-hidden">Add to favorite</span>
                   <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
                     <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
@@ -60,6 +63,7 @@ export default class TripEvent extends AbstractTrip {
     super();
     this._event = event;
     this._editBtnClickHandler = this._editBtnClickHandler.bind(this);
+    this._favoriteBtnClickHandler = this._favoriteBtnClickHandler.bind(this);
   }
 
   getTemplate() {
@@ -71,8 +75,18 @@ export default class TripEvent extends AbstractTrip {
     this._callback.editBtnClick();
   }
 
+  _favoriteBtnClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.favoriteBtnClick();
+  }
+
   setEditBtnClickHandler(callback) {
     this._callback.editBtnClick = callback;
     this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editBtnClickHandler);
+  }
+
+  setFavoriteBtnClickHandler(callback) {
+    this._callback.favoriteBtnClick = callback;
+    this.getElement().querySelector(`.event__favorite-btn`).addEventListener(`click`, this._favoriteBtnClickHandler);
   }
 }

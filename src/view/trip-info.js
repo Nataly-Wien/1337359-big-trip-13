@@ -1,7 +1,6 @@
 import dayjs from 'dayjs';
 import AbstractTrip from './abstract';
 import {getTotalPrice, getTripDates, getRoute} from '../utils/events';
-import {createElement} from '../utils/render';
 
 const createTripInfoTemplate = (price, dates, trip) => {
   return `<section class="trip-main__trip-info  trip-info">
@@ -26,17 +25,5 @@ export default class TripInfo extends AbstractTrip {
 
   getTemplate() {
     return createTripInfoTemplate(this._price, this._dates, this._route);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
