@@ -24,11 +24,11 @@ export default class Trip {
     this._eventsPresenter = new Map();
 
     this._handleEventChange = this._handleEventChange.bind(this);
+    this._closeOpenEdit = this._closeOpenEdit.bind(this);
   }
 
   init(tripEvents) {
     this._events = tripEvents.slice(0).sort(SORTS.default);
-    // this._events = [];
 
     this._renderMenu();
     this._renderFilters();
@@ -79,7 +79,7 @@ export default class Trip {
   }
 
   _renderEvent(event) {
-    const eventPresenter = new EventPresenter(this._tripContainerComponent, this._handleEventChange);
+    const eventPresenter = new EventPresenter(this._tripContainerComponent, this._handleEventChange, this._closeOpenEdit);
     eventPresenter.init(event);
     this._eventsPresenter.set(event.id, eventPresenter);
   }
@@ -91,5 +91,11 @@ export default class Trip {
 
   _renderMessage() {
     renderElement(this._eventsControlsContainer, this._messageComponent, RenderPosition.BEFOREEND);
+  }
+
+  _closeOpenEdit() {
+    this._eventsPresenter.forEach((presenter) => {
+      presenter.replaceEditToEvent();
+    });
   }
 }

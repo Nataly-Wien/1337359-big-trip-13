@@ -3,14 +3,17 @@ import TripEventView from '../view/trip-event';
 import TripEditView from '../view/trip-edit';
 
 export default class Event {
-  constructor(siteTripContainer, changeData) {
+  constructor(siteTripContainer, changeData, resetEditMode) {
     this._tripContainer = siteTripContainer;
     this._changeData = changeData;
+    this._resetEditMode = resetEditMode;
+    this._isEditOpen = false;
 
     this._eventComponent = null;
     this._eventEditComponent = null;
 
     this._handleEditClick = this._handleEditClick.bind(this);
+    this._closeEditMode = this._closeEditMode.bind(this);
     this._handleSaveClick = this._handleSaveClick.bind(this);
     this._handleCancelClick = this._handleCancelClick.bind(this);
     this._escKeydownHandler = this._escKeydownHandler.bind(this);
@@ -61,19 +64,33 @@ export default class Event {
     remove(this._eventEditComponent);
   }
 
+  replaceEditToEvent() {
+    if (!this._isEditOpen) {
+      return;
+    }
+
+    this._closeEditMode();
+  }
+
   _handleEditClick() {
+    this._resetEditMode();
     replaceElement(this._eventEditComponent, this._eventComponent);
     document.addEventListener(`keydown`, this.escKeydownHandler);
+    this._isEditOpen = true;
+  }
+
+  _closeEditMode() {
+    replaceElement(this._eventComponent, this._eventEditComponent);
+    document.removeEventListener(`keydown`, this.escKeydownHandler);
+    this._isEditOpen = false;
   }
 
   _handleSaveClick() {
-    replaceElement(this._eventComponent, this._eventEditComponent);
-    document.removeEventListener(`keydown`, this.escKeydownHandler);
+    this._closeEditMode();
   }
 
   _handleCancelClick() {
-    replaceElement(this._eventComponent, this._eventEditComponent);
-    document.removeEventListener(`keydown`, this.escKeydownHandler);
+    this._closeEditMode();
   }
 
   _escKeydownHandler(evt) {
