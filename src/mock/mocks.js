@@ -1,7 +1,9 @@
 import dayjs from 'dayjs';
+import {nanoid} from 'nanoid';
 import {EVENT_TYPES} from '../const';
 import {OFFERS} from '../const';
 
+const ID_LENGTH = 5;
 const DESCRIPTION_LENGTH = 5;
 const PHOTO_NUMBER = 8;
 const PHOTO_ADDRESS = `http://picsum.photos/248/152?r=${Math.random()}`;
@@ -55,7 +57,7 @@ const getRandomOffers = () => Object.entries(OFFERS).map((item) => ({
   type: item[0],
   title: item[1],
   price: getRandomInRange(MAX_OFFER_PRICE, 1) * 5,
-  isChecked: Math.random() > 0.8 ? true : false,
+  isChecked: Math.random() > 0.8,
 }));
 
 const getRandomStartEndDate = () => {
@@ -72,6 +74,7 @@ export const generateEvent = () => {
   const date = getRandomStartEndDate();
 
   return {
+    id: nanoid(ID_LENGTH),
     type: EVENT_TYPES[getRandomInRange(EVENT_TYPES.length - 1)],
     city: CITIES[getRandomInRange(CITIES.length - 1)],
     price: getRandomInRange(MAX_PRICE, 1) * 10,
@@ -80,5 +83,6 @@ export const generateEvent = () => {
     descriptionPhotos: getRandomArrayFromString(PHOTO_ADDRESS, getRandomInRange(PHOTO_NUMBER, 1)),
     startDateTime: date.start,
     endDateTime: date.end,
+    isFavorite: Math.random() > 0.7,
   };
 };

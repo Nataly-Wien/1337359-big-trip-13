@@ -60,3 +60,12 @@ export const replaceElement = (newElement, oldElement) => {
 
   parent.replaceChild(newElement, oldElement);
 };
+
+export const remove = (element) => {
+  if (!(element instanceof AbstractTrip)) {
+    throw new Error(`Can remove only component`);
+  }
+
+  element.getElement().remove();
+  element.removeElement();
+};
