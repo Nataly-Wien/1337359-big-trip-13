@@ -33,16 +33,21 @@ export const SORT_FIELDS = [
   `Offers`,
 ];
 
-export const MESSAGES = [
-  `Click New Event to create your first point`,
-  `Loading...`,
-];
+export const MESSAGES = {
+  empty: `Click New Event to create your first point`,
+  loading: `Loading...`,
+};
 
 export const SORTS = {
-  default: (a, b) => a.startDateTime - b.startDateTime,
   day: (a, b) => a.startDateTime - b.startDateTime,
-  event: (a, b) => a.city - b.city,
   time: (a, b) => (a.endDateTime - a.startDateTime) - (b.endDateTime - b.startDateTime),
   price: (a, b) => a.price - b.price,
-  // offers,
+};
+
+export const DEFAULT_SORT = `day`;
+
+export const Mode = {
+  DEFAULT: `DEFAULT`,
+  EDITING: `EDITING`,
+  ADDING: `ADDING`,
 };
