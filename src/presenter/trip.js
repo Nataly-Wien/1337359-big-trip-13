@@ -1,4 +1,5 @@
 import {MESSAGES} from '../const';
+import {SORTS, DEFAULT_SORT} from '../const';
 import {renderElement, RenderPosition, remove} from '../utils/render';
 import {updateData} from '../utils/common';
 import TripSortView from '../view/trip-sort';
@@ -9,7 +10,8 @@ import EventPresenter from '../presenter/event';
 export default class Trip {
   constructor(siteEventsControlsContainer) {
     this._eventsControlsContainer = siteEventsControlsContainer;
-    this._sortComponent = new TripSortView();
+    this._sortComponent = null;
+    this._currentSort = DEFAULT_SORT;
     this._tripContainerComponent = new TripContainerView();
     this._messageComponent = null;
     this._eventsContainer = null;
@@ -17,6 +19,7 @@ export default class Trip {
 
     this._handleEventChange = this._handleEventChange.bind(this);
     this._closeOpenEdit = this._closeOpenEdit.bind(this);
+    this._handleSortClick = this._handleSortClick.bind(this);
   }
 
   init(tripEvents) {
@@ -27,13 +30,16 @@ export default class Trip {
       return;
     }
 
+    this._sortComponent = new TripSortView(this._currentSort);
+    this._sortComponent.setSortFieldClickHandler(this._handleSortClick);
     this._renderSort();
+
     this._renderTripContainer();
     this._renderEvents(this._events);
   }
 
   _renderSort() {
-    renderElement(this._eventsControlsContainer, this._sortComponent, RenderPosition.BEFOREEND);
+    renderElement(this._eventsControlsContainer, this._sortComponent, RenderPosition.AFTERBEGIN);
   }
 
   _renderTripContainer() {
@@ -46,10 +52,8 @@ export default class Trip {
   }
 
   _clearEvents() {
-    this._eventsPresenter.values().forEach((presenter) => presenter.destroy());
+    this._eventsPresenter.forEach((presenter) => presenter.destroy());
     this._eventsPresenter.clear();
-
-    remove(this._menuComponent);
   }
 
   _renderEvent(event) {
@@ -72,5 +76,22 @@ export default class Trip {
     this._eventsPresenter.forEach((presenter) => {
       presenter.resetView();
     });
+  }
+
+  _handleSortClick(sortType) {
+    if (sortType === this._currentSort) {
+      return;
+    }
+
+    this._currentSort = sortType;
+    this._events = this._events.sort(SORTS[this._currentSort]);
+    this._clearEvents();
+
+    remove(this._sortComponent);
+    this._sortComponent = new TripSortView(this._currentSort);
+    this._sortComponent.setSortFieldClickHandler(this._handleSortClick);
+    this._renderSort();
+
+    this._renderEvents(this._events);
   }
 }

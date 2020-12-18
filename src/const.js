@@ -26,11 +26,11 @@ export const FILTERS = [
 ];
 
 export const SORT_FIELDS = [
-  `Day`,
-  `Event`,
-  `Time`,
-  `Price`,
-  `Offers`,
+  `day`,
+  `event`,
+  `time`,
+  `price`,
+  `offers`,
 ];
 
 export const MESSAGES = {
