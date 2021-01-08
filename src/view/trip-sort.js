@@ -25,7 +25,6 @@ export default class TripSort extends AbstractTrip {
   }
 
   _sortFieldClickHandler(evt) {
-    evt.preventDefault();
     this._callback.sortFieldClick(evt.target.closest(`.trip-sort__item`).dataset.sortType);
   }
 

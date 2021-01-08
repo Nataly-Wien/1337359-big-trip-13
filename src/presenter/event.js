@@ -86,11 +86,13 @@ export default class Event {
     this._eventMode = Mode.DEFAULT;
   }
 
-  _handleSaveClick() {
+  _handleSaveClick(event) {
+    this._changeData(event);
     this._closeEditMode();
   }
 
   _handleCancelClick() {
+    this._eventEditComponent.reset(this._event);
     this._closeEditMode();
   }
 

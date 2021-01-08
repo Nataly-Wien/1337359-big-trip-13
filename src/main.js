@@ -12,7 +12,7 @@ const siteHeader = document.querySelector(`.trip-main`);
 const siteControls = siteHeader.querySelector(`.trip-controls`);
 const siteMain = document.querySelector(`.trip-events`);
 
-const events = new Array(EVENT_COUNT).fill().map(generateEvent).sort(SORTS[DEFAULT_SORT]);
+const events = new Array(EVENT_COUNT).fill().map(generateEvent).sort(SORTS[DEFAULT_SORT]); //???
 
 renderElement(siteHeader, new TripInfoView(events), RenderPosition.AFTERBEGIN);
 renderElement(siteControls, new TripMenuView(), RenderPosition.AFTERBEGIN);

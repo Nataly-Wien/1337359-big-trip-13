@@ -1,15 +1,15 @@
-export const EVENT_TYPES = [
-  `Taxi`,
-  `Bus`,
-  `Train`,
-  `Ship`,
-  `Transport`,
-  `Drive`,
-  `Flight`,
-  `Check-in`,
-  `Sightseeing`,
-  `Restaurant`,
-];
+export const EVENT_TYPES = {
+  'Taxi': [`uber`],
+  'Bus': [],
+  'Train': [`luggage`, `seats`],
+  'Ship': [`luggage`, `comfort`],
+  'Transport': [],
+  'Drive': [`car`],
+  'Flight': [`luggage`, `meal`, `seats`, `comfort`, `train`],
+  'Check-in': [`breakfast`, `bar`],
+  'Sightseeing': [`tickets`, `lunch`],
+  'Restaurant': [],
+};
 
 export const OFFERS = {
   luggage: `Add luggage`,
@@ -17,6 +17,13 @@ export const OFFERS = {
   meal: `Add meal`,
   seats: `Choose seats`,
   train: `Travel by train`,
+  uber: `Order Uber`,
+  car: `Rent a car`,
+  breakfast: `Add breakfast`,
+  bar: `Restock bar`,
+  tickets: `Book tickets`,
+  lunch: `Lunch in city`,
+  tour: `Take a tour`,
 };
 
 export const FILTERS = [

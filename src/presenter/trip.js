@@ -1,6 +1,6 @@
 import {MESSAGES} from '../const';
 import {SORTS, DEFAULT_SORT} from '../const';
-import {renderElement, RenderPosition, remove} from '../utils/render';
+import {renderElement, RenderPosition} from '../utils/render';
 import {updateData} from '../utils/common';
 import TripSortView from '../view/trip-sort';
 import TripContainerView from '../view/trip-container';
@@ -84,14 +84,8 @@ export default class Trip {
     }
 
     this._currentSort = sortType;
-    this._events = this._events.sort(SORTS[this._currentSort]);
+    const sortedEvents = this._events.sort(SORTS[this._currentSort]);
     this._clearEvents();
-
-    remove(this._sortComponent);
-    this._sortComponent = new TripSortView(this._currentSort);
-    this._sortComponent.setSortFieldClickHandler(this._handleSortClick);
-    this._renderSort();
-
-    this._renderEvents(this._events);
+    this._renderEvents(sortedEvents);
   }
 }
