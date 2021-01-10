@@ -1,8 +1,12 @@
 import dayjs from 'dayjs';
+import flatpickr from 'flatpickr';
 import {EVENT_TYPES} from '../const';
 import SmartView from './smart';
 import {destinationInfo} from '../mock/mocks';
 import {offersInfo} from '../mock/mocks';
+
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
+import '../../node_modules/flatpickr/dist/themes/material_blue.css';
 
 const createEventTypeChoiceTemplate = (type) => Object.keys(EVENT_TYPES).map((item) =>
   `<div class="event__type-item">
@@ -132,12 +136,16 @@ export default class TripEdit extends SmartView {
   constructor(event) {
     super();
     this._data = TripEdit.convertEventToFormData(event);
+    this._startDatepicker = null;
+    this._endDatepicker = null;
     this._saveBtnClickHandler = this._saveBtnClickHandler.bind(this);
     this._cancelBtnClickHandler = this._cancelBtnClickHandler.bind(this);
     this._eventTypeChangeHandler = this._eventTypeChangeHandler.bind(this);
     this._eventDestinationChangeHandler = this._eventDestinationChangeHandler.bind(this);
     this._priceInputHandler = this._priceInputHandler.bind(this);
     this._offersChangeHandler = this._offersChangeHandler.bind(this);
+    this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
+    this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
 
     this._setInnerHandlers();
   }
@@ -182,6 +190,14 @@ export default class TripEdit extends SmartView {
     this.updateData({offers: newOffers});
   }
 
+  _startDateChangeHandler(dateTime) {
+    this.updateData({startDateTime: dayjs(dateTime).valueOf()});
+  }
+
+  _endDateChangeHandler(dateTime) {
+    this.updateData({endDateTime: dayjs(dateTime).valueOf()});
+  }
+
   _setInnerHandlers() {
     this.getElement().querySelector(`.event__type-group`).addEventListener(`change`, this._eventTypeChangeHandler);
     this.getElement().querySelector(`input[id="event-destination-1"]`).addEventListener(`change`, this._eventDestinationChangeHandler);
@@ -191,6 +207,34 @@ export default class TripEdit extends SmartView {
     if (offers) {
       offers.addEventListener(`change`, this._offersChangeHandler);
     }
+
+    this._setDatepicker();
+  }
+
+  _setDatepicker() {
+    if (this._startDatepicker) {
+      this._startDatepicker.destroy();
+      this._startDatepicker = null;
+    }
+
+    if (this._endDatepicker) {
+      this._endDatepicker.destroy();
+      this._endDatepicker = null;
+    }
+
+    this._startDatepicker = flatpickr(this.getElement().querySelector(`input[id="event-start-time-1"]`), {
+      dateFormat: `j/m/y H:i`,
+      enableTime: true,
+      time_24hr: true, // eslint-disable-line camelcase
+      onChange: this._startDateChangeHandler,
+    });
+
+    this._endDatepicker = flatpickr(this.getElement().querySelector(`input[id="event-end-time-1"]`), {
+      dateFormat: `j/m/y H:i`,
+      enableTime: true,
+      time_24hr: true, // eslint-disable-line camelcase
+      onChange: this._endDateChangeHandler,
+    });
   }
 
   getTemplate() {
