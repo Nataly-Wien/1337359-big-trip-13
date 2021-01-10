@@ -20,12 +20,12 @@ export default class Smart extends Abstract {
       return;
     }
 
-    const updatedData = Object.assign({}, this._eventData, update);
-    if (JSON.stringify(Object.entries(updatedData).sort()) === JSON.stringify(Object.entries(this._eventData).sort())) {
+    const updatedData = Object.assign({}, this._data, update);
+    if (JSON.stringify(Object.entries(updatedData).sort()) === JSON.stringify(Object.entries(this._data).sort())) {
       return;
     }
 
-    this._eventData = updatedData;
+    this._data = updatedData;
   }
 
   restoreHandlers() {

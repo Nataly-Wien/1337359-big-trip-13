@@ -4,9 +4,10 @@ import TripEventView from '../view/trip-event';
 import TripEditView from '../view/trip-edit';
 
 export default class Event {
-  constructor(siteTripContainer, changeData, resetEditMode) {
+  constructor(siteTripContainer, changeData, sortEvents, resetEditMode) {
     this._tripContainer = siteTripContainer;
     this._changeData = changeData;
+    this._sortEvents = sortEvents;
     this._resetEditMode = resetEditMode;
     this._eventMode = Mode.DEFAULT;
 
@@ -70,6 +71,7 @@ export default class Event {
       return;
     }
 
+    this._eventEditComponent.reset(this._event);
     this._closeEditMode();
   }
 
@@ -89,6 +91,7 @@ export default class Event {
   _handleSaveClick(event) {
     this._changeData(event);
     this._closeEditMode();
+    this._sortEvents();
   }
 
   _handleCancelClick() {

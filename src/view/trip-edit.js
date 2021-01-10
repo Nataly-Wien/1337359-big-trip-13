@@ -62,12 +62,12 @@ const createDestinationListTemplate = (cities) => cities.map((item) => `<option 
 
 const createTripEditTemplate = (event) => {
   const {
-    currentType,
-    destination,
-    currentPrice,
-    currentOffers,
-    currentDescription,
-    currentPhotos,
+    type,
+    city,
+    price,
+    offers,
+    description,
+    descriptionPhotos,
     startDateTime,
     endDateTime,
   } = event;
@@ -77,21 +77,21 @@ const createTripEditTemplate = (event) => {
                   <div class="event__type-wrapper">
                     <label class="event__type  event__type-btn" for="event-type-toggle-1">
                       <span class="visually-hidden">Choose event type</span>
-                      <img class="event__type-icon" width="17" height="17" src="img/icons/${currentType}.png" alt="Event type icon">
+                      <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
                     </label>
                     <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
                     <div class="event__type-list">
                       <fieldset class="event__type-group">
                         <legend class="visually-hidden">Event type</legend>
-                        ${createEventTypeChoiceTemplate(currentType)}
+                        ${createEventTypeChoiceTemplate(type)}
                       </fieldset>
                     </div>
                   </div>
 
                   <div class="event__field-group  event__field-group--destination">
-                    <label class="event__label  event__type-output" for="event-destination-1">${currentType}</label>
-                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
+                    <label class="event__label  event__type-output" for="event-destination-1">${type}</label>
+                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
                     <datalist id="destination-list-1">
                     ${createDestinationListTemplate(Object.keys(destinationInfo))}
                     </datalist>
@@ -112,7 +112,7 @@ const createTripEditTemplate = (event) => {
                       <span class="visually-hidden">Price</span>
                       &euro;
                     </label>
-                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${currentPrice}">
+                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
                   </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -122,8 +122,8 @@ const createTripEditTemplate = (event) => {
                   </button>
                 </header>
                 <section class="event__details">
-                ${createOffersSectionTemplate(currentOffers)}
-                ${createDestinationSectionTemplate(currentDescription, currentPhotos)}
+                ${createOffersSectionTemplate(offers)}
+                ${createDestinationSectionTemplate(description, descriptionPhotos)}
                 </section>
               </form>`;
 };
@@ -131,7 +131,7 @@ const createTripEditTemplate = (event) => {
 export default class TripEdit extends SmartView {
   constructor(event) {
     super();
-    this._eventData = TripEdit.convertEventToFormData(event);
+    this._data = TripEdit.convertEventToFormData(event);
     this._saveBtnClickHandler = this._saveBtnClickHandler.bind(this);
     this._cancelBtnClickHandler = this._cancelBtnClickHandler.bind(this);
     this._eventTypeChangeHandler = this._eventTypeChangeHandler.bind(this);
@@ -144,7 +144,7 @@ export default class TripEdit extends SmartView {
 
   _saveBtnClickHandler(evt) {
     evt.preventDefault();
-    this._callback.saveBtnClick(TripEdit.convertFormDataToEvent(this._eventData));
+    this._callback.saveBtnClick(TripEdit.convertFormDataToEvent(this._data));
   }
 
   _cancelBtnClickHandler(evt) {
@@ -154,8 +154,8 @@ export default class TripEdit extends SmartView {
 
   _eventTypeChangeHandler(evt) {
     const newType = evt.target.value[0].toUpperCase() + evt.target.value.slice(1);
-    const newOffers = offersInfo[newType];
-    this.updateData({currentType: newType, currentOffers: newOffers});
+    const newOffers = JSON.parse(JSON.stringify(offersInfo))[newType];
+    this.updateData({type: newType, offers: newOffers});
     this.updateEvent();
   }
 
@@ -167,19 +167,19 @@ export default class TripEdit extends SmartView {
     const newDestination = evt.target.value;
     const newDescription = destinationInfo[newDestination].description;
     const newPhotos = destinationInfo[newDestination].descriptionPhotos;
-    this.updateData({destination: newDestination, currentDescription: newDescription, currentPhotos: newPhotos});
+    this.updateData({city: newDestination, description: newDescription, descriptionPhotos: newPhotos});
     this.updateEvent();
   }
 
   _priceInputHandler(evt) {
-    this.updateData({currentPrice: evt.target.value});
+    this.updateData({price: evt.target.value});
   }
 
   _offersChangeHandler(evt) {
     const offerType = evt.target.name.slice(evt.target.name.lastIndexOf(`-`) + 1);
-    const newOffers = this._eventData.offers;
+    const newOffers = this._data.offers.slice();
     newOffers.find((item) => item.type === offerType).isChecked = !newOffers.find((item) => item.type === offerType).isChecked;
-    this.updateData({currentOffers: newOffers});
+    this.updateData({offers: newOffers});
   }
 
   _setInnerHandlers() {
@@ -194,7 +194,7 @@ export default class TripEdit extends SmartView {
   }
 
   getTemplate() {
-    return createTripEditTemplate(this._eventData);
+    return createTripEditTemplate(this._data);
   }
 
   setSaveBtnClickHandler(callback) {
@@ -219,25 +219,10 @@ export default class TripEdit extends SmartView {
   }
 
   static convertEventToFormData(event) {
-    return Object.assign({}, event, {
-      currentType: event.type,
-      currentOffers: event.offers,
-      destination: event.city,
-      currentPrice: event.price,
-      currentDescription: event.description,
-      currentPhotos: event.descriptionPhotos,
-    });
+    return JSON.parse(JSON.stringify(event));
   }
 
   static convertFormDataToEvent(data) {
-    data = Object.assign({}, data);
-    data.type = data.currentType;
-    data.city = data.destination;
-    data.price = data.currentPrice;
-    data.offers = data.currentOffers;
-    data.description = data.currentDescription;
-    data.descriptionPhotos = data.currentPhotos;
-
-    return data;
+    return JSON.parse(JSON.stringify(data));
   }
 }

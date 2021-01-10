@@ -20,6 +20,7 @@ export default class Trip {
     this._handleEventChange = this._handleEventChange.bind(this);
     this._closeOpenEdit = this._closeOpenEdit.bind(this);
     this._handleSortClick = this._handleSortClick.bind(this);
+    this._sortEvents = this._sortEvents.bind(this);
   }
 
   init(tripEvents) {
@@ -57,7 +58,7 @@ export default class Trip {
   }
 
   _renderEvent(event) {
-    const eventPresenter = new EventPresenter(this._eventsContainer, this._handleEventChange, this._closeOpenEdit);
+    const eventPresenter = new EventPresenter(this._eventsContainer, this._handleEventChange, this._sortEvents, this._closeOpenEdit);
     eventPresenter.init(event);
     this._eventsPresenter.set(event.id, eventPresenter);
   }
@@ -78,14 +79,17 @@ export default class Trip {
     });
   }
 
+  _sortEvents() {
+    this._clearEvents();
+    this._renderEvents(this._events.sort(SORTS[this._currentSort]));
+  }
+
   _handleSortClick(sortType) {
     if (sortType === this._currentSort) {
       return;
     }
 
     this._currentSort = sortType;
-    const sortedEvents = this._events.sort(SORTS[this._currentSort]);
-    this._clearEvents();
-    this._renderEvents(sortedEvents);
+    this._sortEvents();
   }
 }
