@@ -12,10 +12,12 @@ const createTripEventTemplate = (event) => {
     isFavorite,
   } = event;
 
+  const differenceDay = dayjs(endDateTime).diff(dayjs(startDateTime), `day`);
+  const day = differenceDay === 0 ? `` : `${(`00` + differenceDay).slice(-2)}D`;
   const differenceHour = dayjs(endDateTime).diff(dayjs(startDateTime), `hour`);
-  const hour = differenceHour === 0 ? `` : `${differenceHour}H`;
-  const differenceMinute = dayjs(endDateTime).diff(dayjs(startDateTime), `minute`) % 60;
-  const minute = differenceMinute === 0 ? `` : `${differenceMinute}M`;
+  const hour = differenceHour === 0 ? `` : `${(`00` + differenceHour % 24).slice(-2)}H`;
+  const differenceMinute = dayjs(endDateTime).diff(dayjs(startDateTime), `minute`);
+  const minute = differenceMinute === 0 ? `` : `${(`00` + differenceMinute % 60).slice(-2)}M`;
 
   const offersTemplate = offers.map((item) => item.isChecked ? `<li class="event__offer">
      <span class="event__offer-title">${item.title} </span>&plus;&euro;&nbsp; <span class="event__offer-price">${item.price}</span>
@@ -36,7 +38,7 @@ const createTripEventTemplate = (event) => {
                     &mdash;
                     <time class="event__end-time" datetime="2019-03-18T11:00">${dayjs(endDateTime).format(`HH:mm`)}</time>
                   </p>
-                  <p class="event__duration">${hour} ${minute}</p>
+                  <p class="event__duration">${day} ${hour} ${minute}</p>
                 </div>
                 <p class="event__price">
                   &euro;&nbsp;<span class="event__price-value">${price}</span>
