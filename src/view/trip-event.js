@@ -17,7 +17,7 @@ const createTripEventTemplate = (event) => {
   const differenceHour = dayjs(endDateTime).diff(dayjs(startDateTime), `hour`);
   const hour = differenceHour === 0 ? `` : `${(`00` + differenceHour % 24).slice(-2)}H`;
   const differenceMinute = dayjs(endDateTime).diff(dayjs(startDateTime), `minute`);
-  const minute = differenceMinute === 0 ? `` : `${(`00` + differenceMinute % 60).slice(-2)}M`;
+  const minute = `${(`00` + differenceMinute % 60).slice(-2)}M`;
 
   const offersTemplate = offers.map((item) => item.isChecked ? `<li class="event__offer">
      <span class="event__offer-title">${item.title} </span>&plus;&euro;&nbsp; <span class="event__offer-price">${item.price}</span>

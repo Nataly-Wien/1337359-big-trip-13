@@ -69,7 +69,6 @@ const createOffersInfo = () => Object.entries(EVENT_TYPES).map(([key, value]) =>
     type: item,
     title: OFFERS[item],
     price: getRandomInRange(MAX_OFFER_PRICE, 1) * 5,
-    isChecked: false,
   }))]);
 
 export const offersInfo = Object.fromEntries(createOffersInfo());
