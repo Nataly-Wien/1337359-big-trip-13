@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
-import {EVENT_TYPES} from '../const';
+import {Mode, EVENT_TYPES} from '../const';
 import SmartView from './smart';
 import {destinationInfo} from '../mock/mocks';
 import {offersInfo} from '../mock/mocks';
@@ -13,7 +13,7 @@ const createEventTypeChoiceTemplate = (type) => Object.keys(EVENT_TYPES).map((it
     <input id="event-type-${item.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type"
       value="${item.toLowerCase()}" ${item === type ? `checked` : ``}>
     <label class="event__type-label  event__type-label--${item.toLowerCase()}" for="event-type-${item.toLowerCase()}-1">${item}</label>
-  </div>`).join();
+  </div>`).join(``);
 
 const createOffersSectionTemplate = (offers) => {
   if (!offers || offers.length === 0) {
@@ -64,7 +64,7 @@ const createDestinationSectionTemplate = (description, photos) => {
 
 const createDestinationListTemplate = (cities) => cities.map((item) => `<option value="${item}"></option>`).join(``);
 
-const createTripEditTemplate = (event) => {
+const createTripEditTemplate = (event, mode) => {
   const {
     type,
     city,
@@ -95,7 +95,8 @@ const createTripEditTemplate = (event) => {
 
                   <div class="event__field-group  event__field-group--destination">
                     <label class="event__label  event__type-output" for="event-destination-1">${type}</label>
-                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
+                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}"
+                    list="destination-list-1" autocomplete="off">
                     <datalist id="destination-list-1">
                     ${createDestinationListTemplate(Object.keys(destinationInfo))}
                     </datalist>
@@ -116,11 +117,11 @@ const createTripEditTemplate = (event) => {
                       <span class="visually-hidden">Price</span>
                       &euro;
                     </label>
-                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}" autocomplete="off">
                   </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-                  <button class="event__reset-btn" type="reset">Delete</button>
+                  <button class="event__reset-btn" type="reset">${mode === Mode.DEFAULT ? `Delete` : `Cancel`}</button>
                   <button class="event__rollup-btn" type="button">
                     <span class="visually-hidden">Open event</span>
                   </button>
@@ -133,13 +134,13 @@ const createTripEditTemplate = (event) => {
 };
 
 export default class TripEdit extends SmartView {
-  constructor(event) {
+  constructor(event, eventMode) {
     super();
     this._data = TripEdit.convertEventToFormData(event);
+    this._eventMode = eventMode;
     this._startDatepicker = null;
     this._endDatepicker = null;
     this._saveBtnClickHandler = this._saveBtnClickHandler.bind(this);
-    this._cancelBtnClickHandler = this._cancelBtnClickHandler.bind(this);
     this._eventTypeChangeHandler = this._eventTypeChangeHandler.bind(this);
     this._eventDestinationChangeHandler = this._eventDestinationChangeHandler.bind(this);
     this._priceInputHandler = this._priceInputHandler.bind(this);
@@ -147,7 +148,40 @@ export default class TripEdit extends SmartView {
     this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
     this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
 
+    this._cancelBtnClickHandler = this._cancelBtnClickHandler.bind(this);
+    this._deleteBtnClickHandler = this._deleteBtnClickHandler.bind(this);
+
     this._setInnerHandlers();
+  }
+
+  getTemplate() {
+    return createTripEditTemplate(this._data, this._eventMode);
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this._startDatepicker) {
+      this._startDatepicker.destroy();
+      this._startDatepicker = null;
+    }
+
+    if (this._endDatepicker) {
+      this._endDatepicker.destroy();
+      this._endDatepicker = null;
+    }
+  }
+
+  reset(oldEvent) {
+    this.updateData(TripEdit.convertEventToFormData(oldEvent));
+    this.updateEvent();
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setSaveBtnClickHandler(this._callback.saveBtnClick);
+    this.setRollupBtnClickHandler(this._callback.cancelBtnClick);
+    this.setDeleteBtnClickHandler(this._callback.deleteBtnClick);
   }
 
   _saveBtnClickHandler(evt) {
@@ -160,15 +194,21 @@ export default class TripEdit extends SmartView {
     this._callback.cancelBtnClick();
   }
 
+  _deleteBtnClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteBtnClick(TripEdit.convertFormDataToEvent(this._data));
+  }
+
   _eventTypeChangeHandler(evt) {
     const newType = evt.target.value[0].toUpperCase() + evt.target.value.slice(1);
-    const newOffers = JSON.parse(JSON.stringify(offersInfo))[newType];
+    const newOffers = offersInfo[newType].map((item) => Object.assign({}, item, {isChecked: false}));
     this.updateData({type: newType, offers: newOffers});
     this.updateEvent();
   }
 
   _eventDestinationChangeHandler(evt) {
     if (Object.keys(destinationInfo).indexOf(evt.target.value) === -1) {
+      evt.target.value = this._data.city;
       return;
     }
 
@@ -180,7 +220,9 @@ export default class TripEdit extends SmartView {
   }
 
   _priceInputHandler(evt) {
-    this.updateData({price: evt.target.value});
+    const value = parseInt(evt.target.value, 10) ? parseInt(evt.target.value, 10) : 0;
+    this.updateData({price: value});
+    evt.target.value = value;
   }
 
   _offersChangeHandler(evt) {
@@ -190,12 +232,14 @@ export default class TripEdit extends SmartView {
     this.updateData({offers: newOffers});
   }
 
-  _startDateChangeHandler(dateTime) {
+  _startDateChangeHandler(dateTime, dateStr) {
     this.updateData({startDateTime: dayjs(dateTime).valueOf()});
+    this._endDatepicker.set(`minDate`, dateStr);
   }
 
-  _endDateChangeHandler(dateTime) {
+  _endDateChangeHandler(dateTime, dateStr) {
     this.updateData({endDateTime: dayjs(dateTime).valueOf()});
+    this._startDatepicker.set(`maxDate`, dateStr);
   }
 
   _setInnerHandlers() {
@@ -237,36 +281,26 @@ export default class TripEdit extends SmartView {
     });
   }
 
-  getTemplate() {
-    return createTripEditTemplate(this._data);
-  }
-
   setSaveBtnClickHandler(callback) {
     this._callback.saveBtnClick = callback;
     this.getElement().querySelector(`.event__save-btn`).addEventListener(`click`, this._saveBtnClickHandler);
   }
 
-  setCancelBtnClickHandler(callback) {
+  setRollupBtnClickHandler(callback) {
     this._callback.cancelBtnClick = callback;
     this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._cancelBtnClickHandler);
   }
 
-  restoreHandlers() {
-    this._setInnerHandlers();
-    this.setSaveBtnClickHandler(this._callback.saveBtnClick);
-    this.setCancelBtnClickHandler(this._callback.cancelBtnClick);
-  }
-
-  reset(oldEvent) {
-    this.updateData(TripEdit.convertEventToFormData(oldEvent));
-    this.updateEvent();
+  setDeleteBtnClickHandler(callback) {
+    this._callback.deleteBtnClick = callback;
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._deleteBtnClickHandler);
   }
 
   static convertEventToFormData(event) {
-    return JSON.parse(JSON.stringify(event));
+    return Object.assign({}, event, {offers: event.offers.map((item) => Object.assign({}, item))});
   }
 
   static convertFormDataToEvent(data) {
-    return JSON.parse(JSON.stringify(data));
+    return Object.assign({}, data, {offers: data.offers.map((item) => Object.assign({}, item))});
   }
 }

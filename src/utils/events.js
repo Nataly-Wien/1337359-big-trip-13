@@ -1,18 +1,19 @@
 import dayjs from 'dayjs';
-import {OFFERS} from '../const';
+import {offersInfo} from '../mock/mocks';
 
-const getEmptyOffers = () => Object.entries(OFFERS).map((item) => ({
-  type: item[0],
-  title: item[1],
-  price: ``,
-  isChecked: ``,
+const DEFAULT_NEW_EVENT_TYPE = `Taxi`;
+
+const getEmptyOffers = () => offersInfo[DEFAULT_NEW_EVENT_TYPE].map((item) => ({
+  type: item.type,
+  title: item.title,
+  price: item.price,
+  isChecked: false,
 }));
 
-
 export const emptyEvent = {
-  type: `Taxi`,
+  type: DEFAULT_NEW_EVENT_TYPE,
   city: ``,
-  price: ``,
+  price: 0,
   offers: getEmptyOffers(),
   description: ``,
   descriptionPhotos: [],
@@ -20,10 +21,9 @@ export const emptyEvent = {
   endDateTime: dayjs().unix() * 1000,
 };
 
-
-export const getTotalPrice = (events) => events && events.length > 0 ? events.reduce((total, item) => total + item.price +
-  item.offers.reduce((sum, it) => sum + it.isChecked ? it.price : 0, 0), 0) : ``;
-
+export const getTotalPrice = (events) =>
+  events && events.length > 0 ? events.reduce((total, item) => total + parseInt(item.price, 10) +
+    item.offers.reduce((sum, it) => sum + (it.isChecked ? parseInt(it.price, 10) : 0), 0), 0) : ``;
 
 export const getTripDates = (events) => {
   if (!events || events.length === 0) {
@@ -35,7 +35,6 @@ export const getTripDates = (events) => {
     endDate: events[events.length - 1].endDateTime,
   };
 };
-
 
 export const getRoute = (events) => {
   if (!events || events.length === 0) {

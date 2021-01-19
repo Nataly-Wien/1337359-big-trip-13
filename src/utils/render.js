@@ -62,6 +62,10 @@ export const replaceElement = (newElement, oldElement) => {
 };
 
 export const remove = (element) => {
+  if (element === null) {
+    return;
+  }
+
   if (!(element instanceof AbstractTrip)) {
     throw new Error(`Can remove only component`);
   }

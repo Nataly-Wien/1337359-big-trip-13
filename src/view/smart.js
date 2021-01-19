@@ -21,9 +21,6 @@ export default class Smart extends Abstract {
     }
 
     const updatedData = Object.assign({}, this._data, update);
-    if (JSON.stringify(Object.entries(updatedData).sort()) === JSON.stringify(Object.entries(this._data).sort())) {
-      return;
-    }
 
     this._data = updatedData;
   }
