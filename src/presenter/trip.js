@@ -1,23 +1,17 @@
 import {MESSAGES, SORT_RULES, DEFAULT_SORT, FILTER_RULES, Filters, UserAction, UpdateType} from '../const';
 import {renderElement, RenderPosition, remove} from '../utils/render';
 import {emptyEvent} from '../utils/events';
-import TripInfoView from '../view/trip-info';
 import TripSortView from '../view/trip-sort';
 import TripContainerView from '../view/trip-container';
 import TripMessageView from '../view/trip-message';
 import EventPresenter from '../presenter/event';
 import NewEventPresenter from '../presenter/new-event';
-import FilterPresenter from '../presenter/filter';
 
 export default class Trip {
-  constructor(siteEventsControlsContainer, siteInfoContainer, siteControlsContainer, newEventBtn, eventsModel, filterModel) {
+  constructor(siteEventsControlsContainer, eventsModel, filterModel) {
     this._eventsControlsContainer = siteEventsControlsContainer;
-    this._siteInfoContainer = siteInfoContainer;
-    this._siteControlsContainer = siteControlsContainer;
-    this._newEventBtn = newEventBtn;
     this._eventsModel = eventsModel;
     this._filterModel = filterModel;
-    this._infoComponent = null;
     this._sortComponent = null;
     this._currentSort = DEFAULT_SORT;
     this._activeFilter = this._filterModel.getFilter();
@@ -26,7 +20,6 @@ export default class Trip {
     this._eventsContainer = null;
     this._eventsPresenter = new Map();
     this._newEventPresenter = null;
-    this._filterPresenter = null;
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -37,12 +30,9 @@ export default class Trip {
 
   init() {
     this._renderTripContainer();
-
-    this._filterPresenter = new FilterPresenter(this._siteControlsContainer, this._filterModel);
-    this._filterPresenter.init();
+    this._newEventPresenter = new NewEventPresenter(this._eventsContainer, this._handleViewAction);
 
     this._eventsModel.subscribe(this._handleModelEvent);
-
     this._filterModel.subscribe(this._handleFilterModelEvent);
     this._filterModel.subscribe(this._handleModelEvent);
 
@@ -51,19 +41,8 @@ export default class Trip {
 
   createNewEvent() {
     this._currentSort = DEFAULT_SORT;
-    this._filterModel.setFilter(Filters.EVERYTHING, UpdateType.REFRESH_ALL_WITH_FILTERS);
-
-    this._newEventPresenter = new NewEventPresenter(this._eventsContainer, this._handleViewAction, this._newEventBtn);
+    this._filterModel.setFilter(Filters.EVERYTHING, UpdateType.REFRESH_ALL);
     this._newEventPresenter.init(emptyEvent);
-
-    this._newEventBtn.disabled = true;
-  }
-
-  _renderInfo() {
-    remove(this._infoComponent);
-
-    this._infoComponent = new TripInfoView(this._eventsModel.getEvents().slice().sort(SORT_RULES[DEFAULT_SORT]));
-    renderElement(this._siteInfoContainer, this._infoComponent, RenderPosition.AFTERBEGIN);
   }
 
   _renderSort() {
@@ -100,7 +79,6 @@ export default class Trip {
       return;
     }
 
-    this._renderInfo();
     this._renderSort();
     this._renderEvents(this._getEvents());
   }
@@ -110,29 +88,16 @@ export default class Trip {
     this._eventsPresenter.clear();
   }
 
-  _clearTrip({resetFilters = false, resetSort = false} = {}) {
-    if (resetSort) {
-      this._currentSort = DEFAULT_SORT;
-    }
-
-    if (this._newEventPresenter !== null) {
-      this._newEventPresenter.destroy();
-    }
-
+  _clearTrip() {
+    this._currentSort = DEFAULT_SORT;
+    this._newEventPresenter.destroy();
     remove(this._sortComponent);
-    remove(this._infoComponent);
     remove(this._messageComponent);
     this._clearEvents();
-
-    if (resetFilters) {
-      this._filterPresenter.init();
-    }
   }
 
   _closeOpenEdit() {
-    if (this._newEventPresenter !== null) {
-      this._newEventPresenter.destroy();
-    }
+    this._newEventPresenter.destroy();
 
     this._eventsPresenter.forEach((presenter) => {
       presenter.resetView();
@@ -175,11 +140,7 @@ export default class Trip {
         this._renderEvents(this._getEvents());
         break;
       case UpdateType.REFRESH_ALL:
-        this._clearTrip({resetSort: true});
-        this._renderTrip();
-        break;
-      case UpdateType.REFRESH_ALL_WITH_FILTERS:
-        this._clearTrip({resetFilters: true, resetSort: true});
+        this._clearTrip();
         this._renderTrip();
         break;
     }

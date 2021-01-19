@@ -13,7 +13,7 @@ const createEventTypeChoiceTemplate = (type) => Object.keys(EVENT_TYPES).map((it
     <input id="event-type-${item.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type"
       value="${item.toLowerCase()}" ${item === type ? `checked` : ``}>
     <label class="event__type-label  event__type-label--${item.toLowerCase()}" for="event-type-${item.toLowerCase()}-1">${item}</label>
-  </div>`).join();
+  </div>`).join(``);
 
 const createOffersSectionTemplate = (offers) => {
   if (!offers || offers.length === 0) {
@@ -95,7 +95,8 @@ const createTripEditTemplate = (event, mode) => {
 
                   <div class="event__field-group  event__field-group--destination">
                     <label class="event__label  event__type-output" for="event-destination-1">${type}</label>
-                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1" autocomplete="off">
+                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}"
+                    list="destination-list-1" autocomplete="off">
                     <datalist id="destination-list-1">
                     ${createDestinationListTemplate(Object.keys(destinationInfo))}
                     </datalist>
@@ -116,7 +117,7 @@ const createTripEditTemplate = (event, mode) => {
                       <span class="visually-hidden">Price</span>
                       &euro;
                     </label>
-                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}" autocomplete="off">
                   </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>

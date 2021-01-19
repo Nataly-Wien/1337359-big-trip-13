@@ -23,7 +23,7 @@ export const emptyEvent = {
 
 export const getTotalPrice = (events) =>
   events && events.length > 0 ? events.reduce((total, item) => total + parseInt(item.price, 10) +
-    item.offers.reduce((sum, it) => sum + it.isChecked ? parseInt(it.price, 10) : 0, 0), 0) : ``;
+    item.offers.reduce((sum, it) => sum + (it.isChecked ? parseInt(it.price, 10) : 0), 0), 0) : ``;
 
 export const getTripDates = (events) => {
   if (!events || events.length === 0) {
@@ -35,7 +35,6 @@ export const getTripDates = (events) => {
     endDate: events[events.length - 1].endDateTime,
   };
 };
-
 
 export const getRoute = (events) => {
   if (!events || events.length === 0) {

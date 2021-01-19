@@ -1,9 +1,10 @@
 import AbstractTrip from './abstract';
 
-const createFilterTemplate = (filters, current) => Object.values(filters).map((item) => `<div class="trip-filters__filter">
-                <input id="filter-${item.toLowerCase()}" class="trip-filters__filter-input  visually-hidden" type="radio"
-                  name="trip-filter" value="${item.toLowerCase()}" ${item === current ? `checked` : ``}>
-                <label class="trip-filters__filter-label" for="filter-${item.toLowerCase()}">${item}</label>
+const createFilterTemplate = (filters, current) => filters.map((item) => `<div class="trip-filters__filter">
+                <input id="filter-${item.filter.toLowerCase()}" class="trip-filters__filter-input  visually-hidden" type="radio"
+                  name="trip-filter" value="${item.filter.toLowerCase()}" ${item.filter === current ? `checked` : ``}
+                  ${item.isDisabled ? `disabled` : ``}>
+                <label class="trip-filters__filter-label" for="filter-${item.filter.toLowerCase()}">${item.filter}</label>
               </div>`).join(``);
 
 const createTripFiltersTemplate = (filters, activeFilter) => {
