@@ -6,7 +6,7 @@ export default class Smart extends Abstract {
     this._data = {};
   }
 
-  updateEvent() {
+  updateElement() {
     const oldElement = this.getElement();
     const parentElement = oldElement.parentElement;
     this.removeElement();
@@ -15,14 +15,8 @@ export default class Smart extends Abstract {
     this.restoreHandlers();
   }
 
-  updateData(update) {
-    if (!update) {
-      return;
-    }
-
-    const updatedData = Object.assign({}, this._data, update);
-
-    this._data = updatedData;
+  updateData() {
+    throw new Error(`Abstract method not implemented: updateData`);
   }
 
   restoreHandlers() {

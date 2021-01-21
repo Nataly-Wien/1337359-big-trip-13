@@ -13,7 +13,6 @@ export default class Trip {
     this._eventsModel = eventsModel;
     this._filterModel = filterModel;
     this._sortComponent = null;
-    this._currentSort = DEFAULT_SORT;
     this._activeFilter = this._filterModel.getFilter();
     this._tripContainerComponent = new TripContainerView();
     this._messageComponent = null;
@@ -36,11 +35,20 @@ export default class Trip {
     this._filterModel.subscribe(this._handleFilterModelEvent);
     this._filterModel.subscribe(this._handleModelEvent);
 
+    this._currentSort = DEFAULT_SORT;
     this._renderTrip();
   }
 
+  destroy() {
+    this._clearTrip();
+    remove(this._tripContainerComponent);
+
+    this._eventsModel.unsubscribe(this._handleModelEvent);
+    this._filterModel.unsubscribe(this._handleFilterModelEvent);
+    this._filterModel.unsubscribe(this._handleModelEvent);
+  }
+
   createNewEvent() {
-    this._currentSort = DEFAULT_SORT;
     this._filterModel.setFilter(Filters.EVERYTHING, UpdateType.REFRESH_ALL);
     this._newEventPresenter.init(emptyEvent);
   }

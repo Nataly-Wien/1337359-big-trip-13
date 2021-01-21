@@ -154,6 +154,22 @@ export default class TripEdit extends SmartView {
     this._setInnerHandlers();
   }
 
+  updateData(update) {
+    if (!update) {
+      return;
+    }
+
+    const updatedData = Object.assign({}, this._data, update);
+    this._data = updatedData;
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setSaveBtnClickHandler(this._callback.saveBtnClick);
+    this.setRollupBtnClickHandler(this._callback.cancelBtnClick);
+    this.setDeleteBtnClickHandler(this._callback.deleteBtnClick);
+  }
+
   getTemplate() {
     return createTripEditTemplate(this._data, this._eventMode);
   }
@@ -174,36 +190,40 @@ export default class TripEdit extends SmartView {
 
   reset(oldEvent) {
     this.updateData(TripEdit.convertEventToFormData(oldEvent));
-    this.updateEvent();
+    this.updateElement();
   }
 
-  restoreHandlers() {
-    this._setInnerHandlers();
-    this.setSaveBtnClickHandler(this._callback.saveBtnClick);
-    this.setRollupBtnClickHandler(this._callback.cancelBtnClick);
-    this.setDeleteBtnClickHandler(this._callback.deleteBtnClick);
-  }
+  _setDatepicker() {
+    if (this._startDatepicker) {
+      this._startDatepicker.destroy();
+      this._startDatepicker = null;
+    }
 
-  _saveBtnClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.saveBtnClick(TripEdit.convertFormDataToEvent(this._data));
-  }
+    if (this._endDatepicker) {
+      this._endDatepicker.destroy();
+      this._endDatepicker = null;
+    }
 
-  _cancelBtnClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.cancelBtnClick();
-  }
+    this._startDatepicker = flatpickr(this.getElement().querySelector(`input[id="event-start-time-1"]`), {
+      dateFormat: `j/m/y H:i`,
+      enableTime: true,
+      time_24hr: true, // eslint-disable-line camelcase
+      onChange: this._startDateChangeHandler,
+    });
 
-  _deleteBtnClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.deleteBtnClick(TripEdit.convertFormDataToEvent(this._data));
+    this._endDatepicker = flatpickr(this.getElement().querySelector(`input[id="event-end-time-1"]`), {
+      dateFormat: `j/m/y H:i`,
+      enableTime: true,
+      time_24hr: true, // eslint-disable-line camelcase
+      onChange: this._endDateChangeHandler,
+    });
   }
 
   _eventTypeChangeHandler(evt) {
     const newType = evt.target.value[0].toUpperCase() + evt.target.value.slice(1);
     const newOffers = offersInfo[newType].map((item) => Object.assign({}, item, {isChecked: false}));
     this.updateData({type: newType, offers: newOffers});
-    this.updateEvent();
+    this.updateElement();
   }
 
   _eventDestinationChangeHandler(evt) {
@@ -216,7 +236,7 @@ export default class TripEdit extends SmartView {
     const newDescription = destinationInfo[newDestination].description;
     const newPhotos = destinationInfo[newDestination].descriptionPhotos;
     this.updateData({city: newDestination, description: newDescription, descriptionPhotos: newPhotos});
-    this.updateEvent();
+    this.updateElement();
   }
 
   _priceInputHandler(evt) {
@@ -255,30 +275,19 @@ export default class TripEdit extends SmartView {
     this._setDatepicker();
   }
 
-  _setDatepicker() {
-    if (this._startDatepicker) {
-      this._startDatepicker.destroy();
-      this._startDatepicker = null;
-    }
+  _saveBtnClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.saveBtnClick(TripEdit.convertFormDataToEvent(this._data));
+  }
 
-    if (this._endDatepicker) {
-      this._endDatepicker.destroy();
-      this._endDatepicker = null;
-    }
+  _cancelBtnClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.cancelBtnClick();
+  }
 
-    this._startDatepicker = flatpickr(this.getElement().querySelector(`input[id="event-start-time-1"]`), {
-      dateFormat: `j/m/y H:i`,
-      enableTime: true,
-      time_24hr: true, // eslint-disable-line camelcase
-      onChange: this._startDateChangeHandler,
-    });
-
-    this._endDatepicker = flatpickr(this.getElement().querySelector(`input[id="event-end-time-1"]`), {
-      dateFormat: `j/m/y H:i`,
-      enableTime: true,
-      time_24hr: true, // eslint-disable-line camelcase
-      onChange: this._endDateChangeHandler,
-    });
+  _deleteBtnClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteBtnClick(TripEdit.convertFormDataToEvent(this._data));
   }
 
   setSaveBtnClickHandler(callback) {
