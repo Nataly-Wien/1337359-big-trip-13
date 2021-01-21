@@ -5,7 +5,6 @@ export const RenderPosition = {
   BEFOREEND: `beforeend`,
 };
 
-
 export const renderElement = (container, element, position) => {
   if (element instanceof AbstractTrip) {
     element = element.getElement();
@@ -25,23 +24,12 @@ export const renderElement = (container, element, position) => {
   }
 };
 
-
-export const renderTemplate = (container, template, position) => {
-  if (container instanceof AbstractTrip) {
-    container = container.getElement();
-  }
-
-  container.insertAdjacentHTML(position, template);
-};
-
-
 export const createElement = (template) => {
   const element = document.createElement(`div`);
   element.innerHTML = template;
 
   return element.firstChild;
 };
-
 
 export const replaceElement = (newElement, oldElement) => {
   if (newElement instanceof AbstractTrip) {

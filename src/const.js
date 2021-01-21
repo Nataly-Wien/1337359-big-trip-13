@@ -80,3 +80,12 @@ export const UpdateType = {
   REFRESH_LIST: `REFRESH_LIST`,
   REFRESH_ALL: `REFRESH_ALL`,
 };
+
+export const MenuItem = {
+  TABLE: `Table`,
+  STATS: `Stats`,
+};
+
+export const BAR_HEIGHT = 55;
+
+export const MILLISECOND_PER_DAY = 1000 * 3600 * 24;

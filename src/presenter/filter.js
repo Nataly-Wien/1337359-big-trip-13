@@ -11,6 +11,7 @@ export default class Filter {
 
     this._activeFilter = null;
     this._filterComponent = null;
+    this._isAllDisabled = false;
 
     this._handleFilterModelEvent = this._handleFilterModelEvent.bind(this);
     this._handleFilterChange = this._handleFilterChange.bind(this);
@@ -24,14 +25,24 @@ export default class Filter {
     this._activeFilter = this._filterModel.getFilter();
 
     remove(this._filterComponent);
-    this._filterComponent = new TripFiltersView(this._getFilters(), this._activeFilter);
+    this._filterComponent = new TripFiltersView(this._getFilters(this._isAllDisabled), this._activeFilter);
     this._filterComponent.setFilterChangeHandler(this._handleFilterChange);
     renderElement(this._filterContainer, this._filterComponent, RenderPosition.BEFOREEND);
   }
 
-  _getFilters() {
+  disableFilters() {
+    this._isAllDisabled = true;
+    this.init();
+  }
+
+  restoreFilters() {
+    this._isAllDisabled = false;
+    this.init();
+  }
+
+  _getFilters(isAllDisabled) {
     return Object.values(Filters).map((item) =>
-      Object.assign({}, {filter: item, isDisabled: this._eventsModel.getEvents().filter(FILTER_RULES[item]).length === 0}));
+      Object.assign({}, {filter: item, isDisabled: isAllDisabled || this._eventsModel.getEvents().filter(FILTER_RULES[item]).length === 0}));
   }
 
   _handleFilterModelEvent() {
@@ -43,7 +54,7 @@ export default class Filter {
   }
 
   _handleFilterChange(filter) {
-    if (filter === this._activeFilter) {
+    if (filter === this._activeFilter || this._isAllDisabled) {
       return;
     }
 
