@@ -85,6 +85,16 @@ export default class Event {
   }
 
   _handleSaveClick(event) {
+    new Promise(() =>
+      this._changeData(UserAction.UPDATE_EVENT, UpdateType.REFRESH_ELEMENT, event)).then(this._closeEditMode());
+  }
+
+  // _handleSaveClick(event) {
+  //   new Promise(() =>
+  //     this._changeData(UserAction.UPDATE_EVENT, UpdateType.REFRESH_ELEMENT, event)).then(this._closeEditMode());
+  // }
+
+  _handleSaveClick(event) {
     this._closeEditMode();
     this._changeData(UserAction.UPDATE_EVENT, UpdateType.REFRESH_ELEMENT, event);
   }
@@ -93,6 +103,11 @@ export default class Event {
     this._eventEditComponent.reset(this._event);
     this._closeEditMode();
   }
+
+  // _handleDeleteClick(event) {
+  //   new Promise(() =>
+  //     this._changeData(UserAction.DELETE_EVENT, UpdateType.REFRESH_ALL, event)).then(this._closeEditMode());
+  // }
 
   _handleDeleteClick(event) {
     this._closeEditMode();

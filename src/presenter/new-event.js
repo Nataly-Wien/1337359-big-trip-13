@@ -1,4 +1,3 @@
-import {nanoid} from 'nanoid';
 import {Mode, UserAction, UpdateType} from '../const';
 import {renderElement, RenderPosition, remove} from '../utils/render';
 import TripEditView from '../view/trip-edit';
@@ -41,7 +40,7 @@ export default class NewEvent {
 
 
   _handleSaveClick(event) {
-    this._changeData(UserAction.ADD_EVENT, UpdateType.REFRESH_ALL, Object.assign({id: nanoid(5)}, event));
+    this._changeData(UserAction.ADD_EVENT, UpdateType.REFRESH_ALL, event);
     this.destroy();
   }
 

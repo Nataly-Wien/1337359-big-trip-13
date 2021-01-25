@@ -8,10 +8,11 @@ import EventPresenter from '../presenter/event';
 import NewEventPresenter from '../presenter/new-event';
 
 export default class Trip {
-  constructor(siteEventsControlsContainer, eventsModel, filterModel) {
+  constructor(siteEventsControlsContainer, eventsModel, filterModel, api) {
     this._eventsControlsContainer = siteEventsControlsContainer;
     this._eventsModel = eventsModel;
     this._filterModel = filterModel;
+    this._api = api;
     this._sortComponent = null;
     this._activeFilter = this._filterModel.getFilter();
     this._tripContainerComponent = new TripContainerView();
@@ -19,6 +20,7 @@ export default class Trip {
     this._eventsContainer = null;
     this._eventsPresenter = new Map();
     this._newEventPresenter = null;
+    this._isLoading = true;
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -82,6 +84,11 @@ export default class Trip {
   }
 
   _renderTrip() {
+    if (this._isLoading) {
+      this._renderMessage(MESSAGES.loading);
+      return;
+    }
+
     if (this._getEvents().length === 0) {
       this._renderMessage(MESSAGES.empty);
       return;
@@ -127,13 +134,19 @@ export default class Trip {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.ADD_EVENT:
-        this._eventsModel.addEvent(update, updateType);
+        this._api.addEvent(update).then((response) => {
+          this._eventsModel.addEvent(response, updateType);
+        });
         break;
       case UserAction.UPDATE_EVENT:
-        this._eventsModel.modifyEvent(update, updateType);
+        this._api.updateEvent(update).then((response) => {
+          this._eventsModel.modifyEvent(response, updateType);
+        });
         break;
       case UserAction.DELETE_EVENT:
-        this._eventsModel.deleteEvent(update, updateType);
+        this._api.updateEvent(update).then(() => {
+          this._eventsModel.deleteEvent(update, updateType);
+        });
         break;
     }
   }
@@ -151,6 +164,10 @@ export default class Trip {
         this._clearTrip();
         this._renderTrip();
         break;
+      case UpdateType.INIT_EVENTS:
+        this._isLoading = false;
+        this._clearTrip();
+        this._renderTrip();
     }
   }
 

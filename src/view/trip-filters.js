@@ -1,4 +1,5 @@
 import AbstractTrip from './abstract';
+import {toUpperCaseFirst} from '../utils/events';
 
 const createFilterTemplate = (filters, current) => filters.map((item) => `<div class="trip-filters__filter">
                 <input id="filter-${item.filter.toLowerCase()}" class="trip-filters__filter-input  visually-hidden" type="radio"
@@ -28,7 +29,7 @@ export default class TripFilters extends AbstractTrip {
 
   _filterChangeHandler(evt) {
     const filter = evt.target.value;
-    this._callback._filterChange(filter[0].toUpperCase() + filter.slice(1));
+    this._callback._filterChange(toUpperCaseFirst(filter));
   }
 
   setFilterChangeHandler(callback) {

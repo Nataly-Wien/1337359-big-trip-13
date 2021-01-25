@@ -19,9 +19,9 @@ const createTripEventTemplate = (event) => {
   const differenceMinute = dayjs(endDateTime).diff(dayjs(startDateTime), `minute`);
   const minute = `${(`00` + differenceMinute % 60).slice(-2)}M`;
 
-  const offersTemplate = offers.map((item) => item.isChecked ? `<li class="event__offer">
+  const offersTemplate = offers.map((item) => `<li class="event__offer">
      <span class="event__offer-title">${item.title} </span>&plus;&euro;&nbsp; <span class="event__offer-price">${item.price}</span>
-    </li>` : ``).join(``);
+    </li>`).join(``);
 
   const favoriteButtonTemplate = isFavorite ? ` event__favorite-btn--active` : ``;
 

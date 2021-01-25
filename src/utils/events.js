@@ -1,24 +1,17 @@
 import dayjs from 'dayjs';
-import {offersInfo} from '../mock/mocks';
 
 const DEFAULT_NEW_EVENT_TYPE = `Taxi`;
-
-const getEmptyOffers = () => offersInfo[DEFAULT_NEW_EVENT_TYPE].map((item) => ({
-  type: item.type,
-  title: item.title,
-  price: item.price,
-  isChecked: false,
-}));
 
 export const emptyEvent = {
   type: DEFAULT_NEW_EVENT_TYPE,
   city: ``,
   price: 0,
-  offers: getEmptyOffers(),
+  offers: [],
   description: ``,
   descriptionPhotos: [],
   startDateTime: dayjs().unix() * 1000,
   endDateTime: dayjs().unix() * 1000,
+  isFavorite: false,
 };
 
 export const getTotalPrice = (events) =>
@@ -50,4 +43,69 @@ export const getRoute = (events) => {
   const shortRoute = Array.from(new Set(route));
 
   return shortRoute.map((item) => ` &mdash; ${item}`).join(``).slice(8);
+};
+
+export const toUpperCaseFirst = (word) => word[0].toUpperCase() + word.slice(1);
+
+export const adaptToClient = (event) => {
+  const clientEvent = Object.assign({}, event, {
+    price: event.base_price,
+    isFavorite: event.is_favorite,
+    type: toUpperCaseFirst(event.type),
+    startDateTime: dayjs(event.date_from).unix() * 1000,
+    endDateTime: dayjs(event.date_to).unix() * 1000,
+    city: event.destination.name,
+    description: event.destination.description,
+    descriptionPhotos: event.destination.pictures.slice(),
+    offers: event.offers.slice(),
+  });
+
+  delete clientEvent.base_price;
+  delete clientEvent.is_favorite;
+  delete clientEvent.date_from;
+  delete clientEvent.date_to;
+  delete clientEvent.destination;
+
+  return clientEvent;
+};
+
+export const adaptToServer = (event) => {
+  const serverEvent = Object.assign({}, event, {
+    base_price: event.price, // eslint-disable-line camelcase
+    is_favorite: event.isFavorite, // eslint-disable-line camelcase
+    type: event.type.toLowerCase(), // eslint-disable-line camelcase
+    date_from: dayjs(event.startDateTime).format(), // eslint-disable-line camelcase
+    date_to: dayjs(event.endDateTime).format(), // eslint-disable-line camelcase
+    destination: Object.assign({}, {
+      name: event.city,
+      description: event.description,
+      pictures: event.descriptionPhotos.slice(),
+    }),
+    offers: event.offers.slice(),
+  });
+
+  delete serverEvent.price;
+  delete serverEvent.isFavorite;
+  delete serverEvent.startDateTime;
+  delete serverEvent.endDateTime;
+  delete serverEvent.city;
+  delete serverEvent.description;
+  delete serverEvent.descriptionPhotos;
+
+  return serverEvent;
+};
+
+export const destinationsToClient = (info, item) => {
+  info[item.name] = {
+    description: item.description,
+    descriptionPhotos: item.pictures.slice(),
+  };
+
+  return info;
+};
+
+export const offersToClient = (info, item) => {
+  info[toUpperCaseFirst(item.type)] = item.offers.slice();
+
+  return info;
 };

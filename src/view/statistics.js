@@ -1,7 +1,9 @@
 import Chart from "chart.js";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import {BAR_HEIGHT, MILLISECOND_PER_DAY} from '../const';
+import {MILLISECOND_PER_DAY} from '../const';
 import AbstractView from './abstract';
+
+const BAR_HEIGHT = 55;
 
 const createStatisticsTemplate = () => `<section class="statistics">
           <h2 class="visually-hidden">Trip statistics</h2>
@@ -115,21 +117,21 @@ export default class Statistics extends AbstractView {
       plugins: [ChartDataLabels],
       type: `horizontalBar`,
       data: getChartData(this._eventTypes, dataPrice),
-      options: getChartOptions((val) => `€ ${val}`, `MONEY`),
+      options: getChartOptions((value) => `€ ${value}`, `MONEY`),
     });
 
-    this._timeChart = new Chart(moneyCtx, {
+    this._timeChart = new Chart(timeCtx, {
       plugins: [ChartDataLabels],
       type: `horizontalBar`,
       data: getChartData(this._eventTypes, dataTime),
-      options: getChartOptions((val) => `${val} day${val !== 1 ? `s` : ``}`, `TIME`),
+      options: getChartOptions((value) => `${value} day${value !== 1 ? `s` : ``}`, `TIME`),
     });
 
     this._typeChart = new Chart(typeCtx, {
       plugins: [ChartDataLabels],
       type: `horizontalBar`,
       data: getChartData(this._eventTypes, dataAmount),
-      options: getChartOptions((val) => `${val}x`, `TYPE`),
+      options: getChartOptions((value) => `${value}x`, `TYPE`),
     });
   }
 }

@@ -1,5 +1,4 @@
-import {generateEvent} from './mock/mocks';
-import {SORT_RULES, DEFAULT_SORT, MenuItem} from './const';
+import {UpdateType, MenuItem} from './const';
 import {remove, renderElement, RenderPosition} from './utils/render';
 import TripMenuView from './view/trip-menu';
 import StatisticsView from './view/statistics';
@@ -8,21 +7,22 @@ import FilterPresenter from './presenter/filter';
 import TripInfoPresenter from './presenter/info';
 import EventsModel from './model/events-model';
 import FilterModel from './model/filter-model';
+import Api from './api';
 
-const EVENT_COUNT = 15;
+const AUTHORIZATION = `Basic yFTA7RqaCfEOjB4ZwD`;
+const ENDPOINT = `https://13.ecmascript.pages.academy/big-trip`;
 
 const siteHeader = document.querySelector(`.trip-main`);
 const siteControls = siteHeader.querySelector(`.trip-controls`);
 const siteTrip = document.querySelector(`.trip-events`);
 const siteMain = document.querySelector(`.page-trip__container`);
 
-const events = new Array(EVENT_COUNT).fill().map(generateEvent).sort(SORT_RULES[DEFAULT_SORT]);
+const api = new Api(ENDPOINT, AUTHORIZATION);
+
 const eventsModel = new EventsModel();
-eventsModel.setEvents(events);
 const filterModel = new FilterModel();
 
 const menuComponent = new TripMenuView(MenuItem.TABLE);
-renderElement(siteControls, menuComponent, RenderPosition.AFTERBEGIN);
 
 const handleMenuClick = (menuItem) => {
   switch (menuItem) {
@@ -53,10 +53,21 @@ tripInfoPresenter.init();
 const filterPresenter = new FilterPresenter(siteControls, filterModel, eventsModel);
 filterPresenter.init();
 
-const tripPresenter = new TripPresenter(siteTrip, eventsModel, filterModel);
+const tripPresenter = new TripPresenter(siteTrip, eventsModel, filterModel, api);
 tripPresenter.init();
 
 const newEventBtn = document.querySelector(`.trip-main__event-add-btn`);
-newEventBtn.addEventListener(`click`, () => tripPresenter.createNewEvent());
 
 let statsComponent = null;
+
+api.getAllData()
+  .then((events) => {
+    eventsModel.setEvents(events, UpdateType.INIT_EVENTS);
+  })
+  .catch((error) => {
+    eventsModel.setEvents([], UpdateType.INIT_EVENTS);
+  })
+  .finally(() => {
+    renderElement(siteControls, menuComponent, RenderPosition.AFTERBEGIN);
+    newEventBtn.addEventListener(`click`, () => tripPresenter.createNewEvent());
+  });
