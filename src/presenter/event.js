@@ -1,4 +1,4 @@
-import {Mode, UserAction, UpdateType} from '../const';
+import {Mode, State, UserAction, UpdateType} from '../const';
 import {renderElement, RenderPosition, replaceElement, remove} from '../utils/render';
 import TripEventView from '../view/trip-event';
 import TripEditView from '../view/trip-edit';
@@ -71,11 +71,43 @@ export default class Event {
     this._closeEditMode();
   }
 
-  _handleEditClick() {
-    this._resetEditMode();
-    replaceElement(this._eventEditComponent, this._eventComponent);
-    document.addEventListener(`keydown`, this._escKeydownHandler);
-    this._eventMode = Mode.EDITING;
+  setViewState(state) {
+    const resetViewState = () => {
+      this._eventEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+      this._eventEditComponent.updateElement();
+    };
+
+    switch (state) {
+      case State.SAVING:
+        this._eventEditComponent.updateData({
+          isDisabled: true,
+          isSaving: true,
+        });
+        this._eventEditComponent.updateElement();
+        break;
+      case State.DELETING:
+        this._eventEditComponent.updateData({
+          isDisabled: true,
+          isDeleting: true,
+        });
+        this._eventEditComponent.updateElement();
+        break;
+      case State.ABORTING:
+        switch (this._eventMode) {
+          case Mode.EDITING:
+            this._eventEditComponent.showError(resetViewState);
+            break;
+          case Mode.DEFAULT:
+            this._eventComponent.showError(resetViewState);
+            break;
+        }
+
+        break;
+    }
   }
 
   _closeEditMode() {
@@ -84,18 +116,14 @@ export default class Event {
     this._eventMode = Mode.DEFAULT;
   }
 
-  _handleSaveClick(event) {
-    new Promise(() =>
-      this._changeData(UserAction.UPDATE_EVENT, UpdateType.REFRESH_ELEMENT, event)).then(this._closeEditMode());
+  _handleEditClick() {
+    this._resetEditMode();
+    this._eventMode = Mode.EDITING;
+    replaceElement(this._eventEditComponent, this._eventComponent);
+    document.addEventListener(`keydown`, this._escKeydownHandler);
   }
 
-  // _handleSaveClick(event) {
-  //   new Promise(() =>
-  //     this._changeData(UserAction.UPDATE_EVENT, UpdateType.REFRESH_ELEMENT, event)).then(this._closeEditMode());
-  // }
-
   _handleSaveClick(event) {
-    this._closeEditMode();
     this._changeData(UserAction.UPDATE_EVENT, UpdateType.REFRESH_ELEMENT, event);
   }
 
@@ -104,13 +132,7 @@ export default class Event {
     this._closeEditMode();
   }
 
-  // _handleDeleteClick(event) {
-  //   new Promise(() =>
-  //     this._changeData(UserAction.DELETE_EVENT, UpdateType.REFRESH_ALL, event)).then(this._closeEditMode());
-  // }
-
   _handleDeleteClick(event) {
-    this._closeEditMode();
     this._changeData(UserAction.DELETE_EVENT, UpdateType.REFRESH_ALL, event);
   }
 

@@ -38,10 +38,25 @@ export default class NewEvent {
     this._newEventBtn.disabled = false;
   }
 
+  setSavingState() {
+    this._eventAddComponent.updateData({
+      isDisabled: true,
+      isSaving: true,
+    });
+    this._eventAddComponent.updateElement();
+  }
+
+  setAbortingState() {
+    const resetState = () => {
+      this._eventAddComponent.updateData({isDisabled: false, isSaving: false});
+      this._eventAddComponent.updateElement();
+    };
+
+    this._eventAddComponent.showError(resetState);
+  }
 
   _handleSaveClick(event) {
     this._changeData(UserAction.ADD_EVENT, UpdateType.REFRESH_ALL, event);
-    this.destroy();
   }
 
   _handleRollupClick() {

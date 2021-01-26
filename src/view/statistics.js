@@ -4,6 +4,19 @@ import {MILLISECOND_PER_DAY} from '../const';
 import AbstractView from './abstract';
 
 const BAR_HEIGHT = 55;
+const CHART_COLOR = `#000000`;
+const BACKGROUND_COLOR = `#ffffff`;
+const FONT_SIZE = 13;
+const TITLE_FONT_SIZE = 23;
+const THICKNESS = 44;
+const LENGTH = 50;
+const PADDING = 5;
+
+const Setting = {
+  START: `start`,
+  END: `end`,
+  LEFT: `left`,
+};
 
 const createStatisticsTemplate = () => `<section class="statistics">
           <h2 class="visually-hidden">Trip statistics</h2>
@@ -22,9 +35,9 @@ const getChartData = (labels, chartData) => ({
   labels: labels.map((item) => item.toUpperCase()),
   datasets: [{
     data: chartData,
-    backgroundColor: `#ffffff`,
-    hoverBackgroundColor: `#ffffff`,
-    anchor: `start`
+    backgroundColor: BACKGROUND_COLOR,
+    hoverBackgroundColor: BACKGROUND_COLOR,
+    anchor: Setting.START
   }]
 });
 
@@ -32,33 +45,33 @@ const getChartOptions = (format, title) => ({
   plugins: {
     datalabels: {
       font: {
-        size: 13
+        size: FONT_SIZE
       },
-      color: `#000000`,
-      anchor: `end`,
-      align: `start`,
+      color: CHART_COLOR,
+      anchor: Setting.END,
+      align: Setting.START,
       formatter: format
     }
   },
   title: {
     display: true,
     text: title,
-    fontColor: `#000000`,
-    fontSize: 23,
-    position: `left`
+    fontColor: CHART_COLOR,
+    fontSize: TITLE_FONT_SIZE,
+    position: Setting.LEFT
   },
   scales: {
     yAxes: [{
       ticks: {
-        fontColor: `#000000`,
-        padding: 5,
-        fontSize: 13,
+        fontColor: CHART_COLOR,
+        padding: PADDING,
+        fontSize: FONT_SIZE,
       },
       gridLines: {
         display: false,
         drawBorder: false
       },
-      barThickness: 44,
+      barThickness: THICKNESS,
     }],
     xAxes: [{
       ticks: {
@@ -69,7 +82,7 @@ const getChartOptions = (format, title) => ({
         display: false,
         drawBorder: false
       },
-      minBarLength: 50
+      minBarLength: LENGTH
     }],
   },
   legend: {

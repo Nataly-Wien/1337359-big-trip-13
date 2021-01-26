@@ -64,7 +64,7 @@ api.getAllData()
   .then((events) => {
     eventsModel.setEvents(events, UpdateType.INIT_EVENTS);
   })
-  .catch((error) => {
+  .catch(() => {
     eventsModel.setEvents([], UpdateType.INIT_EVENTS);
   })
   .finally(() => {

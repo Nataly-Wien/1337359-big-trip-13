@@ -2,6 +2,20 @@ import dayjs from 'dayjs';
 
 export const EVENT_TYPES = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`, `Check-in`, `Sightseeing`, `Restaurant`];
 
+export const DEFAULT_NEW_EVENT_TYPE = `Taxi`;
+
+export const EMPTY_EVENT = {
+  type: DEFAULT_NEW_EVENT_TYPE,
+  city: ``,
+  price: 0,
+  offers: [],
+  description: ``,
+  descriptionPhotos: [],
+  startDateTime: dayjs().unix() * 1000,
+  endDateTime: dayjs().unix() * 1000,
+  isFavorite: false,
+};
+
 export const MESSAGES = {
   empty: `Click New Event to create your first point`,
   loading: `Loading...`,
@@ -43,6 +57,12 @@ export const Mode = {
   ADDING: `ADDING`,
 };
 
+export const State = {
+  SAVING: `SAVING`,
+  DELETING: `DELETING`,
+  ABORTING: `ABORTING`,
+};
+
 export const UserAction = {
   UPDATE_EVENT: `UPDATE_EVENT`,
   ADD_EVENT: `ADD_EVENT`,
@@ -62,9 +82,3 @@ export const MenuItem = {
 };
 
 export const MILLISECOND_PER_DAY = 1000 * 3600 * 24;
-
-export const Url = {
-  POINTS: `points`,
-  DESTINATIONS: `destinations`,
-  OFFERS: `offers`,
-};

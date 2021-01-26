@@ -15,7 +15,7 @@ const createEventTypeChoiceTemplate = (type) => EVENT_TYPES.map((item) =>
     <label class="event__type-label  event__type-label--${item.toLowerCase()}" for="event-type-${item.toLowerCase()}-1">${item}</label>
   </div>`).join(``);
 
-const createOffersSectionTemplate = (offers, offersInfo, type) => {
+const createOffersSectionTemplate = (offers, offersInfo, type, isDisabled) => {
   if (offersInfo.length === 0) {
     return ``;
   }
@@ -24,7 +24,7 @@ const createOffersSectionTemplate = (offers, offersInfo, type) => {
     const isChecked = offers.find((offer) => offer.title === item.title);
     return `<div class="event__offer-selector">
     <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-${index}" type="checkbox"
-    name="event-offer-${type}-${index}" ${isChecked ? `checked` : ``}>
+    name="event-offer-${type}-${index}" ${isChecked ? `checked` : ``}${isDisabled ? ` disabled` : ``}>
     <label class="event__offer-label" for="event-offer-${type}-${index}">
       <span class="event__offer-title">${item.title}</span>
       &plus;&euro;&nbsp;
@@ -77,6 +77,9 @@ const createTripEditTemplate = (event, mode, offersInfo, destinationInfo) => {
     descriptionPhotos,
     startDateTime,
     endDateTime,
+    isDisabled,
+    isSaving,
+    isDeleting,
   } = event;
 
   return `<form class="event event--edit" action="#" method="post">
@@ -89,7 +92,7 @@ const createTripEditTemplate = (event, mode, offersInfo, destinationInfo) => {
                     <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
                     <div class="event__type-list">
-                      <fieldset class="event__type-group">
+                      <fieldset class="event__type-group"${isDisabled ? ` disabled` : ``}>
                         <legend class="visually-hidden">Event type</legend>
                         ${createEventTypeChoiceTemplate(type)}
                       </fieldset>
@@ -98,8 +101,8 @@ const createTripEditTemplate = (event, mode, offersInfo, destinationInfo) => {
 
                   <div class="event__field-group  event__field-group--destination">
                     <label class="event__label  event__type-output" for="event-destination-1">${type}</label>
-                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}"
-                    list="destination-list-1" autocomplete="off">
+                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination"
+                      value="${city}" list="destination-list-1" autocomplete="off"${isDisabled ? ` disabled` : ``}>
                     <datalist id="destination-list-1">
                     ${createDestinationListTemplate(Object.keys(destinationInfo))}
                     </datalist>
@@ -108,11 +111,11 @@ const createTripEditTemplate = (event, mode, offersInfo, destinationInfo) => {
                   <div class="event__field-group  event__field-group--time">
                     <label class="visually-hidden" for="event-start-time-1">From</label>
                     <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time"
-                      value="${dayjs(startDateTime).format(`DD/MM/YY HH:mm`)}">
+                      value="${dayjs(startDateTime).format(`DD/MM/YY HH:mm`)}"${isDisabled ? ` disabled` : ``}>
                     &mdash;
                     <label class="visually-hidden" for="event-end-time-1">To</label>
                     <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time"
-                      value="${dayjs(endDateTime).format(`DD/MM/YY HH:mm`)}">
+                      value="${dayjs(endDateTime).format(`DD/MM/YY HH:mm`)}"${isDisabled ? ` disabled` : ``}>
                   </div>
 
                   <div class="event__field-group  event__field-group--price">
@@ -120,17 +123,21 @@ const createTripEditTemplate = (event, mode, offersInfo, destinationInfo) => {
                       <span class="visually-hidden">Price</span>
                       &euro;
                     </label>
-                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}" autocomplete="off">
+                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price"
+                     value="${price}" autocomplete="off"${isDisabled ? ` disabled` : ``}>
                   </div>
 
-                  <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-                  <button class="event__reset-btn" type="reset">${mode === Mode.DEFAULT ? `Delete` : `Cancel`}</button>
-                  <button class="event__rollup-btn" type="button">
+                  <button class="event__save-btn  btn  btn--blue" type="submit"${isDisabled ? ` disabled` : ``}>${isSaving ? `Saving...` : `Save`}
+                    </button>
+                  <button class="event__reset-btn" type="reset"${isDisabled ? ` disabled` : ``}>${mode === Mode.ADDING ? `Cancel` : ``}
+                    ${mode !== Mode.ADDING && !isDeleting ? `Delete` : ``}${mode !== Mode.ADDING && isDeleting ? `Deleting...` : ``}
+                    </button>
+                  <button class="event__rollup-btn" type="button"${isDisabled ? ` disabled` : ``}>
                     <span class="visually-hidden">Open event</span>
                   </button>
                 </header>
                 <section class="event__details">
-                ${createOffersSectionTemplate(offers, offersInfo[type], type.toLowerCase())}
+                ${createOffersSectionTemplate(offers, offersInfo[type], type.toLowerCase(), isDisabled)}
                 ${createDestinationSectionTemplate(description, descriptionPhotos)}
                 </section>
               </form>`;
@@ -143,8 +150,6 @@ export default class TripEdit extends SmartView {
     this._eventMode = eventMode;
     this._startDatepicker = null;
     this._endDatepicker = null;
-    // this._saveBtn = this.getElement().querySelector(`.event__save-btn`);
-    // this._deleteBtn = this.getElement().querySelector(`.event__reset-btn`);
     this._destinationInfo = Storage.getDestinations();
     this._offersInfo = Storage.getOffers();
 
@@ -229,7 +234,6 @@ export default class TripEdit extends SmartView {
 
   _eventTypeChangeHandler(evt) {
     const newType = toUpperCaseFirst(evt.target.value);
-    // const newOffers = this._offersInfo[newType].map((item) => Object.assign({}, item, {isChecked: false}));
     const newOffers = [];
     this.updateData({type: newType, offers: newOffers});
     this.updateElement();
@@ -298,8 +302,6 @@ export default class TripEdit extends SmartView {
       return;
     }
 
-    // this._saveBtn.textContent = `Saving...`;
-    this.getElement().querySelector(`.event__save-btn`).textContent = `Saving...`;
     this._callback.saveBtnClick(TripEdit.convertFormDataToEvent(this._data));
   }
 
@@ -310,14 +312,11 @@ export default class TripEdit extends SmartView {
 
   _deleteBtnClickHandler(evt) {
     evt.preventDefault();
-    // this._deleteBtn.textContent = `Deleting...`;
-    this.getElement().querySelector(`.event__reset-btn`).textContent = `Deleting...`;
     this._callback.deleteBtnClick(TripEdit.convertFormDataToEvent(this._data));
   }
 
   setSaveBtnClickHandler(callback) {
     this._callback.saveBtnClick = callback;
-    // this._saveBtn.addEventListener(`click`, this._saveBtnClickHandler);
     this.getElement().querySelector(`.event__save-btn`).addEventListener(`click`, this._saveBtnClickHandler);
   }
 
@@ -328,15 +327,27 @@ export default class TripEdit extends SmartView {
 
   setDeleteBtnClickHandler(callback) {
     this._callback.deleteBtnClick = callback;
-    // this._deleteBtn.addEventListener(`click`, this._deleteBtnClickHandler);
     this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._deleteBtnClickHandler);
   }
 
   static convertEventToFormData(event) {
-    return Object.assign({}, event, {offers: event.offers.map((item) => Object.assign({}, item))});
+    return Object.assign({}, event, {
+      offers: event.offers.map((item) => Object.assign({}, item)),
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    });
   }
 
   static convertFormDataToEvent(data) {
-    return Object.assign({}, data, {offers: data.offers.map((item) => Object.assign({}, item))});
+    const event = Object.assign({}, data, {
+      offers: data.offers.map((item) => Object.assign({}, item))
+    });
+
+    delete event.isDisabled;
+    delete event.isSaving;
+    delete event.isDeleting;
+
+    return event;
   }
 }
