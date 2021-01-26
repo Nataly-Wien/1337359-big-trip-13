@@ -21,16 +21,16 @@ export const MESSAGES = {
   loading: `Loading...`,
 };
 
-export const Filters = {
+export const FilterType = {
   EVERYTHING: `Everything`,
   FUTURE: `Future`,
   PAST: `Past`,
 };
 
 export const FILTER_RULES = {
-  [Filters.EVERYTHING]: (item) => item,
-  [Filters.FUTURE]: (item) => item.startDateTime > dayjs().unix() * 1000,
-  [Filters.PAST]: (item) => item.endDateTime < dayjs().unix() * 1000,
+  [FilterType.EVERYTHING]: (item) => item,
+  [FilterType.FUTURE]: (item) => item.startDateTime > dayjs().unix() * 1000,
+  [FilterType.PAST]: (item) => item.endDateTime < dayjs().unix() * 1000,
 };
 
 export const DEFAULT_FILTER = `Everything`;
@@ -45,8 +45,8 @@ export const SORT_FIELDS = [
 
 export const SORT_RULES = {
   day: (a, b) => a.startDateTime - b.startDateTime,
-  time: (a, b) => (a.endDateTime - a.startDateTime) - (b.endDateTime - b.startDateTime),
-  price: (a, b) => a.price - b.price,
+  time: (a, b) => (b.endDateTime - b.startDateTime) - (a.endDateTime - a.startDateTime),
+  price: (a, b) => b.price - a.price,
 };
 
 export const DEFAULT_SORT = `day`;

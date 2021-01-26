@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
 
 export const getTotalPrice = (events) =>
-  events && events.length > 0 ? events.reduce((total, item) => total + parseInt(item.price, 10) +
-    item.offers.reduce((sum, it) => sum + (it.isChecked ? parseInt(it.price, 10) : 0), 0), 0) : ``;
+  events && events.length > 0 ? events.reduce((total, item) => total + item.price +
+    item.offers.reduce((sum, it) => sum + it.price, 0), 0) : ``;
 
 export const getTripDates = (events) => {
   if (!events || events.length === 0) {

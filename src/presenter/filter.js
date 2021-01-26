@@ -1,7 +1,7 @@
 
 import TripFiltersView from '../view/trip-filters';
 import {renderElement, RenderPosition, remove} from '../utils/render';
-import {Filters, FILTER_RULES, UpdateType} from '../const';
+import {FilterType, FILTER_RULES, UpdateType} from '../const';
 
 export default class Filter {
   constructor(filterContainer, filterModel, eventsModel) {
@@ -41,7 +41,7 @@ export default class Filter {
   }
 
   _getFilters(isAllDisabled) {
-    return Object.values(Filters).map((item) =>
+    return Object.values(FilterType).map((item) =>
       Object.assign({}, {filter: item, isDisabled: isAllDisabled || this._eventsModel.getEvents().filter(FILTER_RULES[item]).length === 0}));
   }
 

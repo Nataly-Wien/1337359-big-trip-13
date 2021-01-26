@@ -8,10 +8,10 @@ export default class Event {
     this._tripContainer = siteTripContainer;
     this._changeData = changeData;
     this._resetEditMode = resetEditMode;
-    this._eventMode = Mode.DEFAULT;
+    this._mode = Mode.DEFAULT;
 
-    this._eventComponent = null;
-    this._eventEditComponent = null;
+    this._pointComponent = null;
+    this._pointEditComponent = null;
 
     this._handleEditClick = this._handleEditClick.bind(this);
     this._closeEditMode = this._closeEditMode.bind(this);
@@ -25,21 +25,21 @@ export default class Event {
   init(event) {
     this._event = event;
     this.initiateView();
-    renderElement(this._tripContainer, this._eventComponent, RenderPosition.BEFOREEND);
+    renderElement(this._tripContainer, this._pointComponent, RenderPosition.BEFOREEND);
   }
 
   refresh(event) {
-    const oldEvent = this._eventComponent;
-    const oldEditEvent = this._eventEditComponent;
+    const oldEvent = this._pointComponent;
+    const oldEditEvent = this._pointEditComponent;
 
     this._event = event;
     this.initiateView();
 
-    if (this._eventMode === Mode.DEFAULT) {
-      replaceElement(this._eventComponent, oldEvent);
+    if (this._mode === Mode.DEFAULT) {
+      replaceElement(this._pointComponent, oldEvent);
     }
-    if (this._eventMode === Mode.EDITING) {
-      replaceElement(this._eventEditComponent, oldEditEvent);
+    if (this._mode === Mode.EDITING) {
+      replaceElement(this._pointEditComponent, oldEditEvent);
     }
 
     remove(oldEvent);
@@ -47,62 +47,62 @@ export default class Event {
   }
 
   initiateView() {
-    this._eventComponent = new TripEventView(this._event);
-    this._eventComponent.setEditBtnClickHandler(this._handleEditClick);
-    this._eventComponent.setFavoriteBtnClickHandler(this._handleFavoriteClick);
+    this._pointComponent = new TripEventView(this._event);
+    this._pointComponent.setEditBtnClickHandler(this._handleEditClick);
+    this._pointComponent.setFavoriteBtnClickHandler(this._handleFavoriteClick);
 
-    this._eventEditComponent = new TripEditView(this._event, this._eventMode);
-    this._eventEditComponent.setSaveBtnClickHandler(this._handleSaveClick);
-    this._eventEditComponent.setRollupBtnClickHandler(this._handleCancelClick);
-    this._eventEditComponent.setDeleteBtnClickHandler(this._handleDeleteClick);
+    this._pointEditComponent = new TripEditView(this._event, this._mode);
+    this._pointEditComponent.setSaveBtnClickHandler(this._handleSaveClick);
+    this._pointEditComponent.setRollupBtnClickHandler(this._handleCancelClick);
+    this._pointEditComponent.setDeleteBtnClickHandler(this._handleDeleteClick);
   }
 
   destroy() {
-    remove(this._eventComponent);
-    remove(this._eventEditComponent);
+    remove(this._pointComponent);
+    remove(this._pointEditComponent);
   }
 
   resetView() {
-    if (this._eventMode === Mode.DEFAULT) {
+    if (this._mode === Mode.DEFAULT) {
       return;
     }
 
-    this._eventEditComponent.reset(this._event);
+    this._pointEditComponent.reset(this._event);
     this._closeEditMode();
   }
 
   setViewState(state) {
     const resetViewState = () => {
-      this._eventEditComponent.updateData({
+      this._pointEditComponent.updateData({
         isDisabled: false,
         isSaving: false,
         isDeleting: false,
       });
-      this._eventEditComponent.updateElement();
+      this._pointEditComponent.updateElement();
     };
 
     switch (state) {
       case State.SAVING:
-        this._eventEditComponent.updateData({
+        this._pointEditComponent.updateData({
           isDisabled: true,
           isSaving: true,
         });
-        this._eventEditComponent.updateElement();
+        this._pointEditComponent.updateElement();
         break;
       case State.DELETING:
-        this._eventEditComponent.updateData({
+        this._pointEditComponent.updateData({
           isDisabled: true,
           isDeleting: true,
         });
-        this._eventEditComponent.updateElement();
+        this._pointEditComponent.updateElement();
         break;
       case State.ABORTING:
-        switch (this._eventMode) {
+        switch (this._mode) {
           case Mode.EDITING:
-            this._eventEditComponent.showError(resetViewState);
+            this._pointEditComponent.showError(resetViewState);
             break;
           case Mode.DEFAULT:
-            this._eventComponent.showError(resetViewState);
+            this._pointComponent.showError(resetViewState);
             break;
         }
 
@@ -111,15 +111,15 @@ export default class Event {
   }
 
   _closeEditMode() {
-    replaceElement(this._eventComponent, this._eventEditComponent);
+    replaceElement(this._pointComponent, this._pointEditComponent);
     document.removeEventListener(`keydown`, this._escKeydownHandler);
-    this._eventMode = Mode.DEFAULT;
+    this._mode = Mode.DEFAULT;
   }
 
   _handleEditClick() {
     this._resetEditMode();
-    this._eventMode = Mode.EDITING;
-    replaceElement(this._eventEditComponent, this._eventComponent);
+    this._mode = Mode.EDITING;
+    replaceElement(this._pointEditComponent, this._pointComponent);
     document.addEventListener(`keydown`, this._escKeydownHandler);
   }
 
@@ -128,7 +128,7 @@ export default class Event {
   }
 
   _handleCancelClick() {
-    this._eventEditComponent.reset(this._event);
+    this._pointEditComponent.reset(this._event);
     this._closeEditMode();
   }
 

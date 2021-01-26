@@ -4,13 +4,16 @@ import {MILLISECOND_PER_DAY} from '../const';
 import AbstractView from './abstract';
 
 const BAR_HEIGHT = 55;
-const CHART_COLOR = `#000000`;
-const BACKGROUND_COLOR = `#ffffff`;
 const FONT_SIZE = 13;
 const TITLE_FONT_SIZE = 23;
 const THICKNESS = 44;
 const LENGTH = 50;
 const PADDING = 5;
+
+const Color = {
+  BACKGROUND: `#ffffff`,
+  CHART: `#000000`,
+};
 
 const Setting = {
   START: `start`,
@@ -35,8 +38,8 @@ const getChartData = (labels, chartData) => ({
   labels: labels.map((item) => item.toUpperCase()),
   datasets: [{
     data: chartData,
-    backgroundColor: BACKGROUND_COLOR,
-    hoverBackgroundColor: BACKGROUND_COLOR,
+    backgroundColor: Color.BACKGROUND,
+    hoverBackgroundColor: Color.BACKGROUND,
     anchor: Setting.START
   }]
 });
@@ -47,7 +50,7 @@ const getChartOptions = (format, title) => ({
       font: {
         size: FONT_SIZE
       },
-      color: CHART_COLOR,
+      color: Color.CHART,
       anchor: Setting.END,
       align: Setting.START,
       formatter: format
@@ -56,14 +59,14 @@ const getChartOptions = (format, title) => ({
   title: {
     display: true,
     text: title,
-    fontColor: CHART_COLOR,
+    fontColor: Color.CHART,
     fontSize: TITLE_FONT_SIZE,
     position: Setting.LEFT
   },
   scales: {
     yAxes: [{
       ticks: {
-        fontColor: CHART_COLOR,
+        fontColor: Color.CHART,
         padding: PADDING,
         fontSize: FONT_SIZE,
       },

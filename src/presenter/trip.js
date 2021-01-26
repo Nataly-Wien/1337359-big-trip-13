@@ -1,4 +1,4 @@
-import {MESSAGES, EMPTY_EVENT, SORT_RULES, DEFAULT_SORT, FILTER_RULES, Filters, UserAction, UpdateType, State} from '../const';
+import {MESSAGES, EMPTY_EVENT, SORT_RULES, DEFAULT_SORT, FILTER_RULES, FilterType, UserAction, UpdateType, State} from '../const';
 import {renderElement, RenderPosition, remove} from '../utils/render';
 import TripSortView from '../view/trip-sort';
 import TripContainerView from '../view/trip-container';
@@ -37,11 +37,11 @@ export default class Trip {
     this._filterModel.subscribe(this._handleModelEvent);
 
     this._currentSort = DEFAULT_SORT;
-    this._renderTrip();
+    this._renderBoard();
   }
 
   destroy() {
-    this._clearTrip();
+    this._clearBoard();
     remove(this._tripContainerComponent);
 
     this._eventsModel.unsubscribe(this._handleModelEvent);
@@ -50,7 +50,7 @@ export default class Trip {
   }
 
   createNewEvent() {
-    this._filterModel.setFilter(Filters.EVERYTHING, UpdateType.REFRESH_ALL);
+    this._filterModel.setFilter(FilterType.EVERYTHING, UpdateType.REFRESH_ALL);
     this._newEventPresenter.init(EMPTY_EVENT);
   }
 
@@ -82,7 +82,7 @@ export default class Trip {
     renderElement(this._eventsControlsContainer, this._messageComponent, RenderPosition.BEFOREEND);
   }
 
-  _renderTrip() {
+  _renderBoard() {
     if (this._isLoading) {
       this._renderMessage(MESSAGES.loading);
       return;
@@ -102,8 +102,11 @@ export default class Trip {
     this._eventsPresenter.clear();
   }
 
-  _clearTrip() {
-    this._currentSort = DEFAULT_SORT;
+  _clearBoard({resetSortType = true} = {}) {
+    if (resetSortType) {
+      this._currentSort = DEFAULT_SORT;
+    }
+
     this._newEventPresenter.destroy();
     remove(this._sortComponent);
     remove(this._messageComponent);
@@ -176,13 +179,13 @@ export default class Trip {
         this._renderEvents(this._getEvents());
         break;
       case UpdateType.REFRESH_ALL:
-        this._clearTrip();
-        this._renderTrip();
+        this._clearBoard({resetSortType: false});
+        this._renderBoard();
         break;
       case UpdateType.INIT_EVENTS:
         this._isLoading = false;
-        this._clearTrip();
-        this._renderTrip();
+        this._clearBoard();
+        this._renderBoard();
     }
   }
 

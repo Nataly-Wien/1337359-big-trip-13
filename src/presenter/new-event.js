@@ -7,7 +7,7 @@ export default class NewEvent {
     this._tripContainer = siteTripContainer;
     this._changeData = changeData;
     this._eventMode = Mode.ADDING;
-    this._eventAddComponent = null;
+    this._pointAddComponent = null;
     this._newEventBtn = document.querySelector(`.trip-main__event-add-btn`);
 
     this._handleSaveClick = this._handleSaveClick.bind(this);
@@ -18,41 +18,41 @@ export default class NewEvent {
 
   init(event) {
     this._event = event;
-    this._eventAddComponent = new TripEditView(this._event, this._eventMode);
-    this._eventAddComponent.setSaveBtnClickHandler(this._handleSaveClick);
-    this._eventAddComponent.setRollupBtnClickHandler(this._handleRollupClick);
-    this._eventAddComponent.setDeleteBtnClickHandler(this._handleCancelClick);
-    renderElement(this._tripContainer, this._eventAddComponent, RenderPosition.AFTERBEGIN);
+    this._pointAddComponent = new TripEditView(this._event, this._eventMode);
+    this._pointAddComponent.setSaveBtnClickHandler(this._handleSaveClick);
+    this._pointAddComponent.setRollupBtnClickHandler(this._handleRollupClick);
+    this._pointAddComponent.setDeleteBtnClickHandler(this._handleCancelClick);
+    renderElement(this._tripContainer, this._pointAddComponent, RenderPosition.AFTERBEGIN);
     document.addEventListener(`keydown`, this._escKeydownHandler);
 
     this._newEventBtn.disabled = true;
   }
 
   destroy() {
-    if (this._eventAddComponent === null) {
+    if (this._pointAddComponent === null) {
       return;
     }
 
-    remove(this._eventAddComponent);
+    remove(this._pointAddComponent);
     document.removeEventListener(`keydown`, this._escKeydownHandler);
     this._newEventBtn.disabled = false;
   }
 
   setSavingState() {
-    this._eventAddComponent.updateData({
+    this._pointAddComponent.updateData({
       isDisabled: true,
       isSaving: true,
     });
-    this._eventAddComponent.updateElement();
+    this._pointAddComponent.updateElement();
   }
 
   setAbortingState() {
     const resetState = () => {
-      this._eventAddComponent.updateData({isDisabled: false, isSaving: false});
-      this._eventAddComponent.updateElement();
+      this._pointAddComponent.updateData({isDisabled: false, isSaving: false});
+      this._pointAddComponent.updateElement();
     };
 
-    this._eventAddComponent.showError(resetState);
+    this._pointAddComponent.showError(resetState);
   }
 
   _handleSaveClick(event) {
