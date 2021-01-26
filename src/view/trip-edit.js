@@ -2,33 +2,36 @@ import dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
 import {Mode, EVENT_TYPES} from '../const';
 import SmartView from './smart';
-import {destinationInfo} from '../mock/mocks';
-import {offersInfo} from '../mock/mocks';
+import {toUpperCaseFirst} from '../utils/events';
+import Storage from '../storage';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import '../../node_modules/flatpickr/dist/themes/material_blue.css';
 
-const createEventTypeChoiceTemplate = (type) => Object.keys(EVENT_TYPES).map((item) =>
+const createEventTypeChoiceTemplate = (type) => EVENT_TYPES.map((item) =>
   `<div class="event__type-item">
     <input id="event-type-${item.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type"
       value="${item.toLowerCase()}" ${item === type ? `checked` : ``}>
     <label class="event__type-label  event__type-label--${item.toLowerCase()}" for="event-type-${item.toLowerCase()}-1">${item}</label>
   </div>`).join(``);
 
-const createOffersSectionTemplate = (offers) => {
-  if (!offers || offers.length === 0) {
+const createOffersSectionTemplate = (offers, offersInfo, type) => {
+  if (offersInfo.length === 0) {
     return ``;
   }
 
-  const offersListTemplate = offers.map((item) =>
-    `<div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${item.type}-1" type="checkbox" name="event-offer-${item.type}" ${item.isChecked ? `checked` : ``}>
-    <label class="event__offer-label" for="event-offer-${item.type}-1">
+  const offersListTemplate = offersInfo.map((item, index) => {
+    const isChecked = offers.find((offer) => offer.title === item.title);
+    return `<div class="event__offer-selector">
+    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-${index}" type="checkbox"
+    name="event-offer-${type}-${index}" ${isChecked ? `checked` : ``}>
+    <label class="event__offer-label" for="event-offer-${type}-${index}">
       <span class="event__offer-title">${item.title}</span>
       &plus;&euro;&nbsp;
       <span class="event__offer-price">${item.price}</span>
     </label>
-  </div>`).join(``);
+  </div>`;
+  }).join(``);
 
   return `<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
@@ -50,7 +53,7 @@ const createDestinationSectionTemplate = (description, photos) => {
 
     return `<div class="event__photos-container">
     <div class="event__photos-tape">
-    ${photos.map((item) => `<img class="event__photo" src="${item}" alt="Event photo">`).join(``)}
+    ${photos.map((item) => `<img class="event__photo" src="${item.src}" alt="${item.description}">`).join(``)}
     </div>
   </div>`;
   };
@@ -64,7 +67,7 @@ const createDestinationSectionTemplate = (description, photos) => {
 
 const createDestinationListTemplate = (cities) => cities.map((item) => `<option value="${item}"></option>`).join(``);
 
-const createTripEditTemplate = (event, mode) => {
+const createTripEditTemplate = (event, mode, offersInfo, destinationInfo) => {
   const {
     type,
     city,
@@ -127,7 +130,7 @@ const createTripEditTemplate = (event, mode) => {
                   </button>
                 </header>
                 <section class="event__details">
-                ${createOffersSectionTemplate(offers)}
+                ${createOffersSectionTemplate(offers, offersInfo[type], type.toLowerCase())}
                 ${createDestinationSectionTemplate(description, descriptionPhotos)}
                 </section>
               </form>`;
@@ -140,6 +143,11 @@ export default class TripEdit extends SmartView {
     this._eventMode = eventMode;
     this._startDatepicker = null;
     this._endDatepicker = null;
+    // this._saveBtn = this.getElement().querySelector(`.event__save-btn`);
+    // this._deleteBtn = this.getElement().querySelector(`.event__reset-btn`);
+    this._destinationInfo = Storage.getDestinations();
+    this._offersInfo = Storage.getOffers();
+
     this._saveBtnClickHandler = this._saveBtnClickHandler.bind(this);
     this._eventTypeChangeHandler = this._eventTypeChangeHandler.bind(this);
     this._eventDestinationChangeHandler = this._eventDestinationChangeHandler.bind(this);
@@ -171,7 +179,7 @@ export default class TripEdit extends SmartView {
   }
 
   getTemplate() {
-    return createTripEditTemplate(this._data, this._eventMode);
+    return createTripEditTemplate(this._data, this._eventMode, this._offersInfo, this._destinationInfo);
   }
 
   removeElement() {
@@ -220,21 +228,22 @@ export default class TripEdit extends SmartView {
   }
 
   _eventTypeChangeHandler(evt) {
-    const newType = evt.target.value[0].toUpperCase() + evt.target.value.slice(1);
-    const newOffers = offersInfo[newType].map((item) => Object.assign({}, item, {isChecked: false}));
+    const newType = toUpperCaseFirst(evt.target.value);
+    // const newOffers = this._offersInfo[newType].map((item) => Object.assign({}, item, {isChecked: false}));
+    const newOffers = [];
     this.updateData({type: newType, offers: newOffers});
     this.updateElement();
   }
 
   _eventDestinationChangeHandler(evt) {
-    if (Object.keys(destinationInfo).indexOf(evt.target.value) === -1) {
+    if (Object.keys(this._destinationInfo).indexOf(evt.target.value) === -1) {
       evt.target.value = this._data.city;
       return;
     }
 
     const newDestination = evt.target.value;
-    const newDescription = destinationInfo[newDestination].description;
-    const newPhotos = destinationInfo[newDestination].descriptionPhotos;
+    const newDescription = this._destinationInfo[newDestination].description;
+    const newPhotos = this._destinationInfo[newDestination].descriptionPhotos;
     this.updateData({city: newDestination, description: newDescription, descriptionPhotos: newPhotos});
     this.updateElement();
   }
@@ -246,9 +255,16 @@ export default class TripEdit extends SmartView {
   }
 
   _offersChangeHandler(evt) {
-    const offerType = evt.target.name.slice(evt.target.name.lastIndexOf(`-`) + 1);
-    const newOffers = this._data.offers.slice();
-    newOffers.find((item) => item.type === offerType).isChecked = !newOffers.find((item) => item.type === offerType).isChecked;
+    const offerIndex = +evt.target.name.slice(evt.target.name.lastIndexOf(`-`) + 1);
+    const newOffers = [];
+
+    this._offersInfo[this._data.type].forEach((item, index) => {
+      if (index === offerIndex && evt.target.checked
+        || index !== offerIndex && this._data.offers.findIndex((offer) => offer.title === item.title) >= 0) {
+        newOffers.push(item);
+      }
+    });
+
     this.updateData({offers: newOffers});
   }
 
@@ -277,6 +293,13 @@ export default class TripEdit extends SmartView {
 
   _saveBtnClickHandler(evt) {
     evt.preventDefault();
+
+    if (this._data.city === ``) {
+      return;
+    }
+
+    // this._saveBtn.textContent = `Saving...`;
+    this.getElement().querySelector(`.event__save-btn`).textContent = `Saving...`;
     this._callback.saveBtnClick(TripEdit.convertFormDataToEvent(this._data));
   }
 
@@ -287,11 +310,14 @@ export default class TripEdit extends SmartView {
 
   _deleteBtnClickHandler(evt) {
     evt.preventDefault();
+    // this._deleteBtn.textContent = `Deleting...`;
+    this.getElement().querySelector(`.event__reset-btn`).textContent = `Deleting...`;
     this._callback.deleteBtnClick(TripEdit.convertFormDataToEvent(this._data));
   }
 
   setSaveBtnClickHandler(callback) {
     this._callback.saveBtnClick = callback;
+    // this._saveBtn.addEventListener(`click`, this._saveBtnClickHandler);
     this.getElement().querySelector(`.event__save-btn`).addEventListener(`click`, this._saveBtnClickHandler);
   }
 
@@ -302,6 +328,7 @@ export default class TripEdit extends SmartView {
 
   setDeleteBtnClickHandler(callback) {
     this._callback.deleteBtnClick = callback;
+    // this._deleteBtn.addEventListener(`click`, this._deleteBtnClickHandler);
     this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._deleteBtnClickHandler);
   }
 

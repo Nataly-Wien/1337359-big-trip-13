@@ -1,32 +1,6 @@
 import dayjs from 'dayjs';
 
-export const EVENT_TYPES = {
-  'Taxi': [`uber`],
-  'Bus': [],
-  'Train': [`luggage`, `seats`],
-  'Ship': [`luggage`, `comfort`],
-  'Transport': [],
-  'Drive': [`car`],
-  'Flight': [`luggage`, `meal`, `seats`, `comfort`, `train`],
-  'Check-in': [`breakfast`, `bar`],
-  'Sightseeing': [`tickets`, `lunch`],
-  'Restaurant': [],
-};
-
-export const OFFERS = {
-  luggage: `Add luggage`,
-  comfort: `Switch to comfort class`,
-  meal: `Add meal`,
-  seats: `Choose seats`,
-  train: `Travel by train`,
-  uber: `Order Uber`,
-  car: `Rent a car`,
-  breakfast: `Add breakfast`,
-  bar: `Restock bar`,
-  tickets: `Book tickets`,
-  lunch: `Lunch in city`,
-  tour: `Take a tour`,
-};
+export const EVENT_TYPES = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`, `Check-in`, `Sightseeing`, `Restaurant`];
 
 export const MESSAGES = {
   empty: `Click New Event to create your first point`,
@@ -79,6 +53,7 @@ export const UpdateType = {
   REFRESH_ELEMENT: `REFRESH_ELEMENT`,
   REFRESH_LIST: `REFRESH_LIST`,
   REFRESH_ALL: `REFRESH_ALL`,
+  INIT_EVENTS: `INIT_EVENTS`,
 };
 
 export const MenuItem = {
@@ -86,6 +61,10 @@ export const MenuItem = {
   STATS: `Stats`,
 };
 
-export const BAR_HEIGHT = 55;
-
 export const MILLISECOND_PER_DAY = 1000 * 3600 * 24;
+
+export const Url = {
+  POINTS: `points`,
+  DESTINATIONS: `destinations`,
+  OFFERS: `offers`,
+};
