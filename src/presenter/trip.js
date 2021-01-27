@@ -1,6 +1,5 @@
-import {MESSAGES, SORT_RULES, DEFAULT_SORT, FILTER_RULES, Filters, UserAction, UpdateType} from '../const';
+import {MESSAGES, EMPTY_EVENT, SORT_RULES, DEFAULT_SORT, FILTER_RULES, FilterType, UserAction, UpdateType, State} from '../const';
 import {renderElement, RenderPosition, remove} from '../utils/render';
-import {emptyEvent} from '../utils/events';
 import TripSortView from '../view/trip-sort';
 import TripContainerView from '../view/trip-container';
 import TripMessageView from '../view/trip-message';
@@ -38,11 +37,11 @@ export default class Trip {
     this._filterModel.subscribe(this._handleModelEvent);
 
     this._currentSort = DEFAULT_SORT;
-    this._renderTrip();
+    this._renderBoard();
   }
 
   destroy() {
-    this._clearTrip();
+    this._clearBoard();
     remove(this._tripContainerComponent);
 
     this._eventsModel.unsubscribe(this._handleModelEvent);
@@ -51,8 +50,8 @@ export default class Trip {
   }
 
   createNewEvent() {
-    this._filterModel.setFilter(Filters.EVERYTHING, UpdateType.REFRESH_ALL);
-    this._newEventPresenter.init(emptyEvent);
+    this._filterModel.setFilter(FilterType.EVERYTHING, UpdateType.REFRESH_ALL);
+    this._newEventPresenter.init(EMPTY_EVENT);
   }
 
   _renderSort() {
@@ -83,7 +82,7 @@ export default class Trip {
     renderElement(this._eventsControlsContainer, this._messageComponent, RenderPosition.BEFOREEND);
   }
 
-  _renderTrip() {
+  _renderBoard() {
     if (this._isLoading) {
       this._renderMessage(MESSAGES.loading);
       return;
@@ -103,8 +102,11 @@ export default class Trip {
     this._eventsPresenter.clear();
   }
 
-  _clearTrip() {
-    this._currentSort = DEFAULT_SORT;
+  _clearBoard({resetSortType = true} = {}) {
+    if (resetSortType) {
+      this._currentSort = DEFAULT_SORT;
+    }
+
     this._newEventPresenter.destroy();
     remove(this._sortComponent);
     remove(this._messageComponent);
@@ -134,19 +136,34 @@ export default class Trip {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.ADD_EVENT:
-        this._api.addEvent(update).then((response) => {
-          this._eventsModel.addEvent(response, updateType);
-        });
+        this._newEventPresenter.setSavingState();
+        this._api.addEvent(update)
+          .then((response) => {
+            this._eventsModel.addEvent(response, updateType);
+          })
+          .catch(() => {
+            this._newEventPresenter.setAbortingState();
+          });
         break;
       case UserAction.UPDATE_EVENT:
-        this._api.updateEvent(update).then((response) => {
-          this._eventsModel.modifyEvent(response, updateType);
-        });
+        this._eventsPresenter.get(update.id).setViewState(State.SAVING);
+        this._api.updateEvent(update)
+          .then((response) => {
+            this._eventsModel.modifyEvent(response, updateType);
+          })
+          .catch(() => {
+            this._eventsPresenter.get(update.id).setViewState(State.ABORTING);
+          });
         break;
       case UserAction.DELETE_EVENT:
-        this._api.updateEvent(update).then(() => {
-          this._eventsModel.deleteEvent(update, updateType);
-        });
+        this._eventsPresenter.get(update.id).setViewState(State.DELETING);
+        this._api.deleteEvent(update)
+          .then(() => {
+            this._eventsModel.deleteEvent(update, updateType);
+          })
+          .catch(() => {
+            this._eventsPresenter.get(update.id).setViewState(State.ABORTING);
+          });
         break;
     }
   }
@@ -155,19 +172,20 @@ export default class Trip {
     switch (updateType) {
       case UpdateType.REFRESH_ELEMENT:
         this._eventsPresenter.get(data.id).refresh(data);
+        this._eventsPresenter.get(data.id).resetView();
         break;
       case UpdateType.REFRESH_LIST:
         this._clearEvents();
         this._renderEvents(this._getEvents());
         break;
       case UpdateType.REFRESH_ALL:
-        this._clearTrip();
-        this._renderTrip();
+        this._clearBoard({resetSortType: false});
+        this._renderBoard();
         break;
       case UpdateType.INIT_EVENTS:
         this._isLoading = false;
-        this._clearTrip();
-        this._renderTrip();
+        this._clearBoard();
+        this._renderBoard();
     }
   }
 

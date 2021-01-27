@@ -1,22 +1,8 @@
 import dayjs from 'dayjs';
 
-const DEFAULT_NEW_EVENT_TYPE = `Taxi`;
-
-export const emptyEvent = {
-  type: DEFAULT_NEW_EVENT_TYPE,
-  city: ``,
-  price: 0,
-  offers: [],
-  description: ``,
-  descriptionPhotos: [],
-  startDateTime: dayjs().unix() * 1000,
-  endDateTime: dayjs().unix() * 1000,
-  isFavorite: false,
-};
-
 export const getTotalPrice = (events) =>
-  events && events.length > 0 ? events.reduce((total, item) => total + parseInt(item.price, 10) +
-    item.offers.reduce((sum, it) => sum + (it.isChecked ? parseInt(it.price, 10) : 0), 0), 0) : ``;
+  events && events.length > 0 ? events.reduce((total, item) => total + item.price +
+    item.offers.reduce((sum, it) => sum + it.price, 0), 0) : ``;
 
 export const getTripDates = (events) => {
   if (!events || events.length === 0) {
@@ -73,7 +59,7 @@ export const adaptToServer = (event) => {
   const serverEvent = Object.assign({}, event, {
     base_price: event.price, // eslint-disable-line camelcase
     is_favorite: event.isFavorite, // eslint-disable-line camelcase
-    type: event.type.toLowerCase(), // eslint-disable-line camelcase
+    type: event.type.toLowerCase(),
     date_from: dayjs(event.startDateTime).format(), // eslint-disable-line camelcase
     date_to: dayjs(event.endDateTime).format(), // eslint-disable-line camelcase
     destination: Object.assign({}, {

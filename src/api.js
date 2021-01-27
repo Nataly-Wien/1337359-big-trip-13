@@ -1,4 +1,3 @@
-import {Url} from './const';
 import {adaptToClient, adaptToServer, destinationsToClient, offersToClient} from './utils/events';
 import Storage from './storage';
 
@@ -14,8 +13,11 @@ const SuccessHTTPStatusRange = {
   MAX: 299,
 };
 
-// https://13.ecmascript.pages.academy/big-trip/points
-// Authorization  Basic yFTA7RqaCfEOjB4ZwD
+export const Url = {
+  POINTS: `points`,
+  DESTINATIONS: `destinations`,
+  OFFERS: `offers`,
+};
 
 export default class Api {
   constructor(endpoint, authorization) {
