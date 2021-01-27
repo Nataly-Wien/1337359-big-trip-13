@@ -1,4 +1,4 @@
-import {Mode, State, UserAction, UpdateType} from '../const';
+import {KeyCode, Mode, State, UserAction, UpdateType} from '../const';
 import {renderElement, RenderPosition, replaceElement, remove} from '../utils/render';
 import TripEventView from '../view/trip-event';
 import TripEditView from '../view/trip-edit';
@@ -116,6 +116,13 @@ export default class Event {
     this._mode = Mode.DEFAULT;
   }
 
+  _escKeydownHandler(evt) {
+    if (evt.key === KeyCode.ESCAPE || evt.key === KeyCode.ESC) {
+      evt.preventDefault();
+      this._closeEditMode();
+    }
+  }
+
   _handleEditClick() {
     this._resetEditMode();
     this._mode = Mode.EDITING;
@@ -134,13 +141,6 @@ export default class Event {
 
   _handleDeleteClick(event) {
     this._changeData(UserAction.DELETE_EVENT, UpdateType.REFRESH_ALL, event);
-  }
-
-  _escKeydownHandler(evt) {
-    if (evt.key === `Escape` || evt.key === `Esc`) {
-      evt.preventDefault();
-      this._closeEditMode();
-    }
   }
 
   _handleFavoriteClick() {

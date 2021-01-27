@@ -24,12 +24,12 @@ export default class TripSort extends AbstractTrip {
     return createTripSortTemplate(this._currentSort);
   }
 
-  _sortFieldClickHandler(evt) {
-    this._callback.sortFieldClick(evt.target.closest(`.trip-sort__item`).dataset.sortType);
-  }
-
   setSortFieldClickHandler(callback) {
     this._callback.sortFieldClick = callback;
     this.getElement().addEventListener(`click`, this._sortFieldClickHandler);
+  }
+
+  _sortFieldClickHandler(evt) {
+    this._callback.sortFieldClick(evt.target.closest(`.trip-sort__item`).dataset.sortType);
   }
 }

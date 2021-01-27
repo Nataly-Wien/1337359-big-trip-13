@@ -72,16 +72,6 @@ export default class TripEvent extends AbstractTrip {
     return createTripEventTemplate(this._event);
   }
 
-  _editBtnClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.editBtnClick();
-  }
-
-  _favoriteBtnClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.favoriteBtnClick();
-  }
-
   setEditBtnClickHandler(callback) {
     this._callback.editBtnClick = callback;
     this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editBtnClickHandler);
@@ -90,5 +80,15 @@ export default class TripEvent extends AbstractTrip {
   setFavoriteBtnClickHandler(callback) {
     this._callback.favoriteBtnClick = callback;
     this.getElement().querySelector(`.event__favorite-btn`).addEventListener(`click`, this._favoriteBtnClickHandler);
+  }
+
+  _editBtnClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.editBtnClick();
+  }
+
+  _favoriteBtnClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.favoriteBtnClick();
   }
 }

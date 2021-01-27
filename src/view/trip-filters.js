@@ -27,13 +27,13 @@ export default class TripFilters extends AbstractTrip {
     return createTripFiltersTemplate(this._filters, this._activeFilter);
   }
 
-  _filterChangeHandler(evt) {
-    const filter = evt.target.value;
-    this._callback._filterChange(toUpperCaseFirst(filter));
-  }
-
   setFilterChangeHandler(callback) {
     this._callback._filterChange = callback;
     this.getElement().addEventListener(`change`, this._filterChangeHandler);
+  }
+
+  _filterChangeHandler(evt) {
+    const filter = evt.target.value;
+    this._callback._filterChange(toUpperCaseFirst(filter));
   }
 }
