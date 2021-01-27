@@ -1,4 +1,4 @@
-import {Mode, UserAction, UpdateType} from '../const';
+import {KeyCode, Mode, UserAction, UpdateType} from '../const';
 import {renderElement, RenderPosition, remove} from '../utils/render';
 import TripEditView from '../view/trip-edit';
 
@@ -55,6 +55,13 @@ export default class NewEvent {
     this._pointAddComponent.showError(resetState);
   }
 
+  _escKeydownHandler(evt) {
+    if (evt.key === KeyCode.ESCAPE || evt.key === KeyCode.ESC) {
+      evt.preventDefault();
+      this.destroy();
+    }
+  }
+
   _handleSaveClick(event) {
     this._changeData(UserAction.ADD_EVENT, UpdateType.REFRESH_ALL, event);
   }
@@ -65,12 +72,5 @@ export default class NewEvent {
 
   _handleCancelClick() {
     this.destroy();
-  }
-
-  _escKeydownHandler(evt) {
-    if (evt.key === `Escape` || evt.key === `Esc`) {
-      evt.preventDefault();
-      this.destroy();
-    }
   }
 }

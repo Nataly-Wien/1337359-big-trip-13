@@ -81,4 +81,9 @@ export const MenuItem = {
   STATS: `Stats`,
 };
 
+export const KeyCode = {
+  ESCAPE: `Escape`,
+  ESC: `Esc`,
+};
+
 export const MILLISECOND_PER_DAY = 1000 * 3600 * 24;

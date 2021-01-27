@@ -67,6 +67,10 @@ const createDestinationSectionTemplate = (description, photos) => {
 
 const createDestinationListTemplate = (cities) => cities.map((item) => `<option value="${item}"></option>`).join(``);
 
+const createRollupBtnTemplate = (isDisabled) => `<button class="event__rollup-btn" type="button"${isDisabled ? ` disabled` : ``}>
+    <span class="visually-hidden">Open event</span>
+  </button>`;
+
 const createTripEditTemplate = (event, mode, offersInfo, destinationInfo) => {
   const {
     type,
@@ -132,9 +136,8 @@ const createTripEditTemplate = (event, mode, offersInfo, destinationInfo) => {
                   <button class="event__reset-btn" type="reset"${isDisabled ? ` disabled` : ``}>${mode === Mode.ADDING ? `Cancel` : ``}
                     ${mode !== Mode.ADDING && !isDeleting ? `Delete` : ``}${mode !== Mode.ADDING && isDeleting ? `Deleting...` : ``}
                     </button>
-                  <button class="event__rollup-btn" type="button"${isDisabled ? ` disabled` : ``}>
-                    <span class="visually-hidden">Open event</span>
-                  </button>
+                  ${mode !== Mode.ADDING ? createRollupBtnTemplate(isDisabled) : ``}
+
                 </header>
                 <section class="event__details">
                 ${createOffersSectionTemplate(offers, offersInfo[type], type.toLowerCase(), isDisabled)}
@@ -206,6 +209,25 @@ export default class TripEdit extends SmartView {
     this.updateElement();
   }
 
+  setSaveBtnClickHandler(callback) {
+    this._callback.saveBtnClick = callback;
+    this.getElement().querySelector(`.event__save-btn`).addEventListener(`click`, this._saveBtnClickHandler);
+  }
+
+  setRollupBtnClickHandler(callback) {
+    if (this._eventMode === Mode.ADDING) {
+      return;
+    }
+
+    this._callback.cancelBtnClick = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._cancelBtnClickHandler);
+  }
+
+  setDeleteBtnClickHandler(callback) {
+    this._callback.deleteBtnClick = callback;
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._deleteBtnClickHandler);
+  }
+
   _setDatepicker() {
     if (this._startDatepicker) {
       this._startDatepicker.destroy();
@@ -219,6 +241,7 @@ export default class TripEdit extends SmartView {
 
     this._startDatepicker = flatpickr(this.getElement().querySelector(`input[id="event-start-time-1"]`), {
       dateFormat: `j/m/y H:i`,
+      minDate: this._eventMode === Mode.ADDING ? Date.now() : 0,
       enableTime: true,
       time_24hr: true, // eslint-disable-line camelcase
       onChange: this._startDateChangeHandler,
@@ -226,6 +249,7 @@ export default class TripEdit extends SmartView {
 
     this._endDatepicker = flatpickr(this.getElement().querySelector(`input[id="event-end-time-1"]`), {
       dateFormat: `j/m/y H:i`,
+      minDate: this._eventMode === Mode.ADDING ? Date.now() : 0,
       enableTime: true,
       time_24hr: true, // eslint-disable-line camelcase
       onChange: this._endDateChangeHandler,
@@ -313,21 +337,6 @@ export default class TripEdit extends SmartView {
   _deleteBtnClickHandler(evt) {
     evt.preventDefault();
     this._callback.deleteBtnClick(TripEdit.convertFormDataToEvent(this._data));
-  }
-
-  setSaveBtnClickHandler(callback) {
-    this._callback.saveBtnClick = callback;
-    this.getElement().querySelector(`.event__save-btn`).addEventListener(`click`, this._saveBtnClickHandler);
-  }
-
-  setRollupBtnClickHandler(callback) {
-    this._callback.cancelBtnClick = callback;
-    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._cancelBtnClickHandler);
-  }
-
-  setDeleteBtnClickHandler(callback) {
-    this._callback.deleteBtnClick = callback;
-    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._deleteBtnClickHandler);
   }
 
   static convertEventToFormData(event) {
