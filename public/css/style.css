@@ -979,6 +979,28 @@ main {
 .statistics__item:not(:last-child) {
   margin-bottom: 78px; }
 
+.toast-container {
+  position: absolute;
+  z-index: 100;
+  top: 0;
+  right: 0;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding: 20px;
+  font-family: "Montserrat", "Arial", sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 24px;
+}
+
+.toast-message {
+  padding: 30px;
+  background-color: #b62d50;
+  color: #fda2c0;
+  border-radius: 2px;
+}
+
 @keyframes shake {
           0%,
           100% {

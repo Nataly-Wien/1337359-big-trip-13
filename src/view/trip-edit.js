@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
 import {Mode, EVENT_TYPES} from '../const';
 import SmartView from './smart';
-import {toUpperCaseFirst} from '../utils/events';
+import {toUpperCaseFirst} from '../utils/common';
 import Storage from '../storage';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
@@ -243,7 +243,7 @@ export default class TripEdit extends SmartView {
       dateFormat: `j/m/y H:i`,
       minDate: this._eventMode === Mode.ADDING ? Date.now() : 0,
       enableTime: true,
-      time_24hr: true, // eslint-disable-line camelcase
+      [`time_24hr`]: true,
       onChange: this._startDateChangeHandler,
     });
 
@@ -251,7 +251,7 @@ export default class TripEdit extends SmartView {
       dateFormat: `j/m/y H:i`,
       minDate: this._eventMode === Mode.ADDING ? Date.now() : 0,
       enableTime: true,
-      time_24hr: true, // eslint-disable-line camelcase
+      [`time_24hr`]: true,
       onChange: this._endDateChangeHandler,
     });
   }
