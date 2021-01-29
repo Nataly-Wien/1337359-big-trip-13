@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import {toUpperCaseFirst} from './common';
 
 export const getTotalPrice = (events) =>
   events && events.length > 0 ? events.reduce((total, item) => total + item.price +
@@ -31,8 +32,6 @@ export const getRoute = (events) => {
   return shortRoute.map((item) => ` &mdash; ${item}`).join(``).slice(8);
 };
 
-export const toUpperCaseFirst = (word) => word[0].toUpperCase() + word.slice(1);
-
 export const adaptToClient = (event) => {
   const clientEvent = Object.assign({}, event, {
     price: event.base_price,
@@ -57,11 +56,11 @@ export const adaptToClient = (event) => {
 
 export const adaptToServer = (event) => {
   const serverEvent = Object.assign({}, event, {
-    base_price: event.price, // eslint-disable-line camelcase
-    is_favorite: event.isFavorite, // eslint-disable-line camelcase
+    [`base_price`]: event.price,
+    [`is_favorite`]: event.isFavorite,
     type: event.type.toLowerCase(),
-    date_from: dayjs(event.startDateTime).format(), // eslint-disable-line camelcase
-    date_to: dayjs(event.endDateTime).format(), // eslint-disable-line camelcase
+    [`date_from`]: dayjs(event.startDateTime).format(),
+    [`date_to`]: dayjs(event.endDateTime).format(),
     destination: Object.assign({}, {
       name: event.city,
       description: event.description,

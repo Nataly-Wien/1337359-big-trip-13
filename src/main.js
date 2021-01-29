@@ -1,4 +1,4 @@
-import {UpdateType, MenuItem} from './const';
+import {WARNINGS, UpdateType, MenuItem} from './const';
 import {remove, renderElement, RenderPosition} from './utils/render';
 import TripMenuView from './view/trip-menu';
 import StatisticsView from './view/statistics';
@@ -7,10 +7,15 @@ import FilterPresenter from './presenter/filter';
 import TripInfoPresenter from './presenter/info';
 import EventsModel from './model/events-model';
 import FilterModel from './model/filter-model';
-import Api from './api';
+import Api from './api/api';
+import Store from './api/store';
+import Provider from './api/provider';
 
 const AUTHORIZATION = `Basic yFTA7RqaCfEOjB4ZwD`;
 const ENDPOINT = `https://13.ecmascript.pages.academy/big-trip`;
+const STORE_PREFIX = `big-trip`;
+const STORE_VER = `v1`;
+const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
 const siteHeader = document.querySelector(`.trip-main`);
 const siteControls = siteHeader.querySelector(`.trip-controls`);
@@ -18,6 +23,8 @@ const siteTrip = document.querySelector(`.trip-events`);
 const siteMain = document.querySelector(`.page-trip__container`);
 
 const api = new Api(ENDPOINT, AUTHORIZATION);
+const store = new Store(STORE_NAME, window.localStorage);
+const apiWidthProvider = new Provider(api, store);
 
 const eventsModel = new EventsModel();
 const filterModel = new FilterModel();
@@ -53,14 +60,14 @@ tripInfoPresenter.init();
 const filterPresenter = new FilterPresenter(siteControls, filterModel, eventsModel);
 filterPresenter.init();
 
-const tripPresenter = new TripPresenter(siteTrip, eventsModel, filterModel, api);
+const tripPresenter = new TripPresenter(siteTrip, eventsModel, filterModel, apiWidthProvider);
 tripPresenter.init();
 
 const newEventBtn = document.querySelector(`.trip-main__event-add-btn`);
 
 let statsComponent = null;
 
-api.getAllData()
+apiWidthProvider.getAllData()
   .then((events) => {
     eventsModel.setEvents(events, UpdateType.INIT_EVENTS);
   })
@@ -71,3 +78,16 @@ api.getAllData()
     renderElement(siteControls, menuComponent, RenderPosition.AFTERBEGIN);
     newEventBtn.addEventListener(`click`, () => tripPresenter.createNewEvent());
   });
+
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker.register(`/sw.js`);
+});
+
+window.addEventListener(`offline`, () => {
+  document.title = `${document.title.slice(0)} ${WARNINGS.offline}`;
+});
+
+window.addEventListener(`online`, () => {
+  document.title = document.title.replace(` ${WARNINGS.offline}`, ``);
+  apiWidthProvider.sync();
+});

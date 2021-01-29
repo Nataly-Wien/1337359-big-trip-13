@@ -21,6 +21,14 @@ export const MESSAGES = {
   loading: `Loading...`,
 };
 
+export const WARNINGS = {
+  add: `Can't add event, network error`,
+  edit: `Can't edit event, network error`,
+  save: `Can't save event, network error`,
+  delete: `Can't delete event, network error`,
+  offline: `[Offline mode]`,
+};
+
 export const FilterType = {
   EVERYTHING: `Everything`,
   FUTURE: `Future`,

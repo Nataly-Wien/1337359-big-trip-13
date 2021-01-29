@@ -1,5 +1,7 @@
-import {KeyCode, Mode, State, UserAction, UpdateType} from '../const';
+import {KeyCode, Mode, State, UserAction, UpdateType, WARNINGS} from '../const';
 import {renderElement, RenderPosition, replaceElement, remove} from '../utils/render';
+import {isOnline} from '../utils/common';
+import {showToast} from '../utils/toast';
 import TripEventView from '../view/trip-event';
 import TripEditView from '../view/trip-edit';
 
@@ -124,6 +126,11 @@ export default class Event {
   }
 
   _handleEditClick() {
+    if (!isOnline()) {
+      showToast(WARNINGS.edit);
+      return;
+    }
+
     this._resetEditMode();
     this._mode = Mode.EDITING;
     replaceElement(this._pointEditComponent, this._pointComponent);
@@ -131,6 +138,11 @@ export default class Event {
   }
 
   _handleSaveClick(event) {
+    if (!isOnline()) {
+      showToast(WARNINGS.save);
+      return;
+    }
+
     this._changeData(UserAction.UPDATE_EVENT, UpdateType.REFRESH_ELEMENT, event);
   }
 
@@ -140,6 +152,11 @@ export default class Event {
   }
 
   _handleDeleteClick(event) {
+    if (!isOnline()) {
+      showToast(WARNINGS.delete);
+      return;
+    }
+
     this._changeData(UserAction.DELETE_EVENT, UpdateType.REFRESH_ALL, event);
   }
 

@@ -1,5 +1,7 @@
-import {MESSAGES, EMPTY_EVENT, SORT_RULES, DEFAULT_SORT, FILTER_RULES, FilterType, UserAction, UpdateType, State} from '../const';
+import {MESSAGES, WARNINGS, EMPTY_EVENT, SORT_RULES, DEFAULT_SORT, FILTER_RULES, FilterType, UserAction, UpdateType, State} from '../const';
 import {renderElement, RenderPosition, remove} from '../utils/render';
+import {showToast} from '../utils/toast';
+import {isOnline} from '../utils/common';
 import TripSortView from '../view/trip-sort';
 import TripContainerView from '../view/trip-container';
 import TripMessageView from '../view/trip-message';
@@ -50,6 +52,12 @@ export default class Trip {
   }
 
   createNewEvent() {
+    if (!isOnline()) {
+      showToast(WARNINGS.add);
+
+      return;
+    }
+
     this._filterModel.setFilter(FilterType.EVERYTHING, UpdateType.REFRESH_ALL);
     this._newEventPresenter.init(EMPTY_EVENT);
   }

@@ -1,5 +1,5 @@
-import {adaptToClient, adaptToServer, destinationsToClient, offersToClient} from './utils/events';
-import Storage from './storage';
+import {adaptToClient, adaptToServer, destinationsToClient, offersToClient} from '../utils/events';
+import Storage from '../storage';
 
 const MetHod = {
   GET: `GET`,
@@ -17,6 +17,7 @@ export const Url = {
   POINTS: `points`,
   DESTINATIONS: `destinations`,
   OFFERS: `offers`,
+  SYNC: `sync`,
 };
 
 export default class Api {
@@ -70,6 +71,16 @@ export default class Api {
       url: `${Url.POINTS}/${event.id}`,
       method: MetHod.DELETE,
     });
+  }
+
+  sync(events) {
+    return this._load({
+      url: `${Url.POINTS}/${Url.SYNC}`,
+      method: MetHod.POST,
+      body: JSON.stringify(events),
+      headers: new Headers({"Content-Type": `application/json`}),
+    })
+      .then(Api.toJSON);
   }
 
   _getDestinationsInfo() {
